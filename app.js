@@ -14,7 +14,12 @@ toggle.addEventListener('click', () => {
   navigation.hidden = expanded;
 });
 navigation.addEventListener('click', event => {
-  if (event.target.closest('a') && mobile.matches) syncMenu();
+  const link = event.target.closest('a');
+  if (link && mobile.matches) {
+    const destination = document.querySelector(link.getAttribute('href'));
+    destination?.focus({ preventScroll: true });
+    syncMenu();
+  }
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && mobile.matches && !navigation.hidden) { syncMenu(); toggle.focus(); }

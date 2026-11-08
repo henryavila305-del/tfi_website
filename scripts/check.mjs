@@ -8,6 +8,14 @@ for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) assert(ids.includes(
 for (const [, asset] of html.matchAll(/(?:src|href)="\.\/([^"]+)"/g)) await readFile(asset);
 assert.match(html, /<html lang="en">/);
 assert.equal((html.match(/<h1\b/g) || []).length, 1);
+assert.equal((html.match(/<dt>/g) || []).length, 3, 'Each result metric has one term');
+assert.equal((html.match(/<dd>/g) || []).length, 3, 'Each result metric has one description');
+assert(!/<dt class="note">/.test(html), 'Metric status belongs in the description');
+assert.match(html, /<main id="main" tabindex="-1">/, 'Skip destination can receive focus');
+for (const id of ['picks', 'results', 'sports', 'premium', 'about']) {
+  assert(html.includes(`<section id="${id}" tabindex="-1"`), `${id} can receive menu focus`);
+}
+assert.match(html, /id="sport-detail" role="region" aria-labelledby="sport-title"/);
 assert.match(html, /No free picks published yet/);
 assert.match(html, /These are empty fields, not sample results/);
 assert.match(html, /<button[^>]*disabled>Whop link coming soon/);
