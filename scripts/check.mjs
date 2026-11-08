@@ -7,6 +7,14 @@ assert.equal(new Set(ids).size, ids.length, 'IDs must be unique');
 for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) assert(ids.includes(target), `Missing anchor ${target}`);
 for (const [, asset] of html.matchAll(/(?:src|href)="\.\/([^"]+)"/g)) await readFile(asset);
 assert.match(html, /<html lang="en">/);
+for (const [, references] of html.matchAll(/aria-(?:labelledby|describedby|controls)="([^"]+)"/g)) {
+  for (const target of references.split(/\s+/)) assert(ids.includes(target), `Missing accessible reference ${target}`);
+}
+assert.match(html, /<nav id="navigation" aria-label="Main navigation">/, 'Navigation is available without JavaScript');
+assert.match(html, /<button class="menu"[^>]* hidden>/, 'Unenhanced page must not show a nonfunctional menu toggle');
+assert.equal((html.match(/<details>/g) || []).length, 3, 'FAQs retain native disclosure controls');
+assert.equal((html.match(/<summary>/g) || []).length, 3);
+assert.equal((html.match(/data-sport="/g) || []).length, 6, 'Public sports hub retains six sports');
 assert.equal((html.match(/<h1\b/g) || []).length, 1);
 assert.equal((html.match(/<dt>/g) || []).length, 3, 'Each result metric has one term');
 assert.equal((html.match(/<dd>/g) || []).length, 3, 'Each result metric has one description');
@@ -21,5 +29,10 @@ assert.match(html, /These are empty fields, not sample results/);
 assert.match(html, /<button[^>]*disabled>Whop link coming soon/);
 assert(!/https?:\/\//.test(html), 'No unverified external destinations');
 assert(!/supabase|api[_-]?key|service_role|password/i.test(html), 'No private integration configuration');
+const css = await readFile('styles.css', 'utf8');
+const js = await readFile('app.js', 'utf8');
+assert(!/@import|url\(\s*['"]?https?:/i.test(css), 'CSS must not load remote assets');
+assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(|\.sendBeacon\s*\(/.test(js), 'Public preview must remain disconnected from data services');
+assert(!/<(?:iframe|form)\b/i.test(html), 'No embedded services or collection forms in this preview');
 execFileSync(process.execPath, ['--check', 'app.js']);
 console.log(`Passed: ${ids.length} unique anchors, local assets, honest content states, no external integration, JavaScript syntax.`);

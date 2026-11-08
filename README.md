@@ -6,6 +6,12 @@ Standalone public website preview. Responsive black, charcoal, and electric-gree
 
 Requires Node.js 22 or newer. Run `npm run check`, `npm run build`, then `npm run dev`. Open http://127.0.0.1:4173. Static build output is in `dist/` (ignored by Git). No dependencies to install.
 
+`npm run build:check` builds twice and verifies that output contains exactly the four public assets, matching source byte for byte. If npm is unavailable, run `node scripts/check.mjs`, `node scripts/check-interactions.mjs`, `node scripts/check-build.mjs`, and `node scripts/serve.mjs` directly.
+
+## Automated validation
+
+The PR validation workflow runs source/content checks, simulated focus/menu transitions, repeatable build checks, and whitespace validation on Node 22/24 on Linux and Windows. It requests read-only repository contents and disables persisted checkout credentials. It has no deployment, publishing, or domain steps. These checks do not replace the remaining browser/device and screen-reader review in QA.md.
+
 ## Content boundaries
 
 - No fabricated selections, statistics, odds, or returns. Picks and results are explicitly empty.

@@ -34,6 +34,13 @@ The next browser action was stopped because Computer Use could not determine the
 
 In an available approved browser, open the standalone site and verify: 320px reflow and 200%/400% full-page zoom; keyboard skip/Menu/Escape/sport/FAQ flow; navigation and FAQ with JavaScript disabled; forced-colors focus and disabled Whop distinction; a screen-reader pass of landmarks, headings, result descriptions and sport-panel focus. Repeat in Firefox and Safari on supported devices before claiming cross-engine coverage. Keep Whop disabled throughout these checks.
 
+## Repeatable validation
+
+- Expanded source checks validate every ARIA target, native FAQ controls, six sport links, navigation availability before JavaScript, and the hidden unenhanced Menu button. CSS remote imports/assets, JavaScript network clients, embedded services, and collection forms fail the current disconnected-preview checks.
+- Simulated interaction checks now cover all six sports, ordinary Tab behavior, unrelated focus preservation across resize, and non-link clicks in addition to Menu/Escape/section and breakpoint transitions.
+- `node scripts/check-build.mjs` passes: two builds, exactly four public output files, and byte-for-byte source matching. No test installs or external services are needed.
+- PR-only `.github/workflows/validate.yml` is configured for Node 22/24 on Linux and Windows. It requests read-only contents, disables persisted checkout credentials, and has no deployment steps. A committed workflow is not evidence that CI ran; check the current commit's Actions results separately.
+
 The official Whop destination is unverified, so its button stays disabled. Picks and results remain empty. Brand/content approval, official Whop URL, and public grading/publication rules remain prerequisites for any separately authorized launch.
 
 No merge, deployment, domain connection, TFI Live Tracker, Supabase, live/private picks, or credential changes.
