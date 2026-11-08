@@ -27,9 +27,17 @@ assert.match(html, /id="sport-detail" role="region" aria-labelledby="sport-title
 assert.match(html, /No free picks published yet/);
 assert.match(html, /PUBLIC PREVIEW \/ NO LIVE DATA/, 'Preview status must be visible in the hero');
 assert.match(html, /Illustration only · not performance data/, 'Concept artwork must not imply a performance record');
-assert.match(html, /These are empty fields, not sample results/);
-assert.match(html, /<button[^>]*disabled>Whop link coming soon/);
-assert(!/https?:\/\//.test(html), 'No unverified external destinations');
+
+const whopUrl = 'https://whop.com/x-63cc/tfi-all-access/';
+assert.match(
+  html,
+  /<a\b(?=[^>]*class="button")(?=[^>]*href="https:\/\/whop\.com\/x-63cc\/tfi-all-access\/")(?=[^>]*target="_blank")(?=[^>]*rel="noopener noreferrer")[^>]*>Join TFI All Access\s*[—-]\s*\$35\.99\/month\s*↗<\/a>/,
+  'Official TFI All Access membership link must be enabled and secure'
+);
+const externalUrls = [...html.matchAll(/https:\/\/[^\s"'<>]+/g)].map(match => match[0]);
+assert.deepEqual(externalUrls, [whopUrl], 'Only the approved Whop destination is allowed');
+
+
 assert(!/supabase|api[_-]?key|service_role|password/i.test(html), 'No private integration configuration');
 const css = await readFile('styles.css', 'utf8');
 const js = await readFile('app.js', 'utf8');
