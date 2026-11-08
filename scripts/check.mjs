@@ -28,14 +28,22 @@ assert.match(html, /No free picks published yet/);
 assert.match(html, /PUBLIC PREVIEW \/ NO LIVE DATA/, 'Preview status must be visible in the hero');
 assert.match(html, /Illustration only · not performance data/, 'Concept artwork must not imply a performance record');
 
-const whopUrl = 'https://whop.com/x-63cc/tfi-all-access/';
+const whopUrls = [
+  'https://whop.com/x-63cc/tfi-all-access/',
+  'https://whop.com/x-63cc/tfi-premium/'
+];
 assert.match(
   html,
   /<a\b(?=[^>]*class="button")(?=[^>]*href="https:\/\/whop\.com\/x-63cc\/tfi-all-access\/")(?=[^>]*target="_blank")(?=[^>]*rel="noopener noreferrer")[^>]*>Join TFI All Access\s*[—-]\s*\$35\.99\/month\s*↗<\/a>/,
   'Official TFI All Access membership link must be enabled and secure'
 );
+assert.match(
+  html,
+  /<a\b[^>]*class="button"[^>]*href="https:\/\/whop\.com\/x-63cc\/tfi-premium\/"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>Join TFI Premium\s*[—–-]\s*\$9\.99\/month\s*[^<]*<\/a>/,
+  'Official TFI Premium membership link must be enabled and secure'
+);
 const externalUrls = [...html.matchAll(/https:\/\/[^\s"'<>]+/g)].map(match => match[0]);
-assert.deepEqual(externalUrls, [whopUrl], 'Only the approved Whop destination is allowed');
+assert.deepEqual(externalUrls, whopUrls, 'Only the two approved Whop destinations are allowed');
 
 
 assert(!/supabase|api[_-]?key|service_role|password/i.test(html), 'No private integration configuration');
