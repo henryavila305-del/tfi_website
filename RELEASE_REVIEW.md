@@ -26,7 +26,7 @@ Status: **draft review only; launch remains on hold**.
 | Brand and public copy | Owner review required before any launch; Phase 1 copy is a review proposal. |
 | Whop destination | Official TFI URL has not been supplied and verified. Keep checkout disabled. |
 | Public picks/results | No connection authorized. Keep empty until the owner approves public publication and grading rules. |
-| Browser accessibility | Targeted Edge checks, script-omitted fallback navigation/FAQ, and targeted forced-colors emulation passed. Full-page zoom, original-page JavaScript-disabled testing, full contrast coverage, and screen-reader review remain incomplete. See QA.md. |
+| Browser accessibility | Edge header-to-footer traversal at 200%/400%, keyboard flows, script-omitted fallback navigation/FAQ, and targeted forced-colors emulation passed. One sports-grid alignment issue was fixed and rechecked at 400%. Original-page JavaScript-disabled testing, full contrast coverage, other viewport/zoom combinations, and screen-reader review remain incomplete. See QA.md. |
 | Cross-engine/device coverage | Firefox/Safari and physical phones remain unverified. A Chrome launch timed out, and later browser control stopped on URL verification. No bypass is authorized. |
 | Launch-specific review | Applicable legal/privacy copy and final public data/links require review before launch. This preview is not represented as launch-ready. |
 | Merge, hosting, domain | No merge, deployment, hosting registration, or domain connection authorized. |

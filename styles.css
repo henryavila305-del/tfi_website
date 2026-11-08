@@ -8,6 +8,9 @@
 
 /* Keep controls usable with enlarged text and system contrast palettes. */
 .art-caption{font-size:11px;line-height:1.5;color:#bac7ac;margin:18px 0 0}
+.sports-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.sports-grid a{min-width:0}
+@media(max-width:720px){.sports-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:400px){.sports-grid strong{font-size:32px}}
 .text-link,.footer a{min-height:24px;display:inline-flex;align-items:center}
 .faq summary{min-height:44px;padding-block:8px}
 .hero>*,.premium>*,.about>*,.board>*{min-width:0}
