@@ -4,6 +4,8 @@ Branch: `design/tfi-website-phase1`. Draft PR only; production remains on hold.
 
 ## Fixes
 
+- Content review made preview/no-live-data status explicit in the hero, described the results record as planned, and labeled the rising-line artwork as illustration rather than performance data. See RELEASE_REVIEW.md for the complete launch-readiness assessment.
+
 - Replaced orphan result status terms with descriptions belonging to each metric. Added a named results landmark and named sports detail region.
 - Made the main skip destination and mobile navigation destinations focusable. Mobile section selection moves focus before collapsing the menu.
 - Scaled the mobile headline to fit 320px, kept the narrow header on one row, allowed action wrapping, and used a single-column hero at tablet widths.

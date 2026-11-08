@@ -25,6 +25,8 @@ for (const id of ['picks', 'results', 'sports', 'premium', 'about']) {
 }
 assert.match(html, /id="sport-detail" role="region" aria-labelledby="sport-title"/);
 assert.match(html, /No free picks published yet/);
+assert.match(html, /PUBLIC PREVIEW \/ NO LIVE DATA/, 'Preview status must be visible in the hero');
+assert.match(html, /Illustration only · not performance data/, 'Concept artwork must not imply a performance record');
 assert.match(html, /These are empty fields, not sample results/);
 assert.match(html, /<button[^>]*disabled>Whop link coming soon/);
 assert(!/https?:\/\//.test(html), 'No unverified external destinations');

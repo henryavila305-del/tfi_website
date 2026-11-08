@@ -23,6 +23,8 @@ The PR validation workflow runs source/content checks, simulated focus/menu tran
 
 ## Release hold
 
+See RELEASE_REVIEW.md for the content review, verified engineering evidence, and remaining launch gates. See QA.md for exact browser coverage and limitations.
+
 Draft PR only. Do not merge, deploy, connect thefavindex.com, or modify TFI Live Tracker, Supabase, picks, or credentials. No deployment workflow is included.
 
 Before a separately authorized launch: approve brand and content, supply the official Whop URL, approve grading rules and public publication process, complete browser/accessibility review, and review applicable legal/privacy copy. Domain and hosting decisions are outside Phase 1.
