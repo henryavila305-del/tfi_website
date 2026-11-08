@@ -20,3 +20,10 @@
   .button:disabled{color:GrayText;border-color:GrayText}
   .art{border-color:CanvasText;box-shadow:none}
 }
+/* Active TFI All Access membership button */
+.premium-entry a.button {
+  cursor: pointer;
+  background: #c0ff59;
+  border-color: #c0ff59;
+  color: #101210;
+}
