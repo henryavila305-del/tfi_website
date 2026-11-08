@@ -1,1 +1,1 @@
-{"name":"the-favorite-index","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"node scripts/serve.mjs","build":"node scripts/build.mjs","check":"node scripts/check.mjs"},"engines":{"node":">=22"}}
+{"name":"the-favorite-index","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"node scripts/serve.mjs","build":"node scripts/build.mjs","check":"node scripts/check.mjs && node scripts/check-interactions.mjs"},"engines":{"node":">=22"}}

@@ -2,9 +2,14 @@ const toggle = document.querySelector('.menu');
 const navigation = document.querySelector('#navigation');
 const mobile = window.matchMedia('(max-width: 720px)');
 function syncMenu() {
+  const focused = document.activeElement;
+  const focusMovesToMenu = mobile.matches && navigation.contains(focused);
+  const focusMovesToNavigation = !mobile.matches && focused === toggle;
   toggle.hidden = !mobile.matches;
   toggle.setAttribute('aria-expanded', 'false');
   navigation.hidden = mobile.matches;
+  if (focusMovesToMenu) toggle.focus();
+  if (focusMovesToNavigation) navigation.querySelector('a').focus();
 }
 syncMenu();
 mobile.addEventListener('change', syncMenu);

@@ -5,3 +5,14 @@
 @media(min-width:721px) and (max-width:850px){.hero{grid-template-columns:1fr}.art{max-width:480px;width:100%;margin:auto}h1{font-size:72px}.header{gap:18px}nav{gap:12px}.header .brand{font-size:11px}}
 @media(max-width:720px){h1{font-size:clamp(46px,12vw,72px);letter-spacing:-2.5px}.hero .eyebrow{font-size:9px;letter-spacing:1.2px}.actions{flex-wrap:wrap}.art{box-shadow:7px 7px 0 #181e15}.metrics>div{min-width:0}.metrics dt{overflow-wrap:anywhere}}
 @media(max-width:400px){.header{gap:12px}.header .brand{font-size:11px;gap:10px}.header .mark{font-size:26px;padding-right:12px}.sports-grid a{padding:16px}.sports-grid strong{font-size:34px}.premium h2{font-size:36px}}
+
+/* Keep controls usable with enlarged text and system contrast palettes. */
+.text-link,.footer a{min-height:24px;display:inline-flex;align-items:center}
+.faq summary{min-height:44px;padding-block:8px}
+.hero>*,.premium>*,.about>*,.board>*{min-width:0}
+@media(forced-colors:active){
+  :focus-visible{outline:3px solid Highlight}
+  .button,.menu,.sports-grid a,.board,.premium,#sport-detail{border-color:ButtonText}
+  .button:disabled{color:GrayText;border-color:GrayText}
+  .art{border-color:CanvasText;box-shadow:none}
+}
