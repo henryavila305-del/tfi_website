@@ -1,2 +1,7 @@
 dist/
 node_modules/
+.tracker-data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+

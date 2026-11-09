@@ -1,5 +1,9 @@
 # The Favorite Index — Phase 1
 
+## Premium Tracker preview
+
+See [tracker/README.md](tracker/README.md) for the isolated beta. `/tracker/` on branch previews is a labeled synthetic example. The account-enabled beta runs locally only. Production memberships and data are not connected by this branch.
+
 Standalone public website preview. Responsive black, charcoal, and electric-green design with accessible navigation, free picks, results, sports exploration, Premium entry, and methodology.
 
 ## Local review
@@ -28,3 +32,4 @@ See RELEASE_REVIEW.md for the content review, verified engineering evidence, and
 Draft PR only. Do not merge, deploy, connect thefavindex.com, or modify TFI Live Tracker, Supabase, picks, or credentials. No deployment workflow is included.
 
 Before a separately authorized launch: approve brand and content, supply the official Whop URL, approve grading rules and public publication process, complete browser/accessibility review, and review applicable legal/privacy copy. Domain and hosting decisions are outside Phase 1.
+
