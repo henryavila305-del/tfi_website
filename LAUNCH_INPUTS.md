@@ -2,16 +2,18 @@
 
 This is the current decision checklist for PR #5. It records what must be settled; it does not supply approvals, legal advice or authorization to publish. Keep approval references public-safe. Do not put credentials, private messages, member selections or raw workbooks in this public repository.
 
-## Confirmed owner decision
+## Confirmed owner decisions
 
 Approval reference: WHOP-PLAN-PRICE-01. The owner answered yes to confirming the existing Whop plans and prices: All Access at $35.99/month and Premium at $9.99/month. The owner explicitly directed that publication and deployment remain blocked. Scope is plan names and displayed prices; other launch approvals remain pending.
+
+Approval reference: BRAND-CONTENT-01. The owner answered yes to approving the current branding, public website copy and historical-result disclosures in PR #5 at commit b5f03924d0fc8a96a84512d04033f1ca3344823b (index.html blob b26dd901178915756217bb1573e17330a386078c). No copy changes were requested. This applies to the current presentation and disclosures; it does not verify historical outcomes independently, approve future picks, or lift either hold. Legal/privacy review remains a separate pending input.
 
 ## Owner decisions and evidence
 
 | Input | Current implementation/evidence | Exact remaining decision or record |
 | --- | --- | --- |
 | Whop membership | Owner confirmed the existing plan names and displayed prices in this chat: All Access $35.99/month and Premium $9.99/month. Existing links are retained. | No plan/price change requested. Retain https://whop.com/x-63cc/tfi-all-access/ and https://whop.com/x-63cc/tfi-premium/; include these existing destinations in the final pre-release link check. This records plan/price approval, not a new independent checkout/ownership verification or permission to publish. |
-| Brand and public content | Current identity, tagline, Premium wording, methodology, risk statement and historical disclosures are reviewable in index.html. | Record approval of the exact current copy/assets, or list exact replacements and the approving owner. Confirm permitted historical categories, coverage dates and self-reported/incomplete-pricing disclosures for launch. |
+| Brand and public content | Owner approved the current branding, public copy and historical-result disclosures at b5f03924d0fc8a96a84512d04033f1ca3344823b; see BRAND-CONTENT-01. | No changes requested to the approved version. Obtain fresh approval for substantive future copy, identity, historical-scope or disclosure changes. This approval does not replace the separate legal/privacy decision or authorize publication. |
 | Public-pick eligibility and approval | Contract/renderer exist; content remains empty and builds block publication. | Define which selections can be public, who approves each entry, a public-safe approval reference, pre-event release timing/timezone and the fields allowed to leave the private workflow. No automated private-source import is authorized. |
 | Odds and grading | American odds and UTC timestamps are structurally validated; pending/win/loss/push/void labels exist. Future settlement rules are not defined by the historical import. | Choose odds capture source/time and price-change policy; authoritative grading source and settlement timing; push/void/postponement rules; correction/withdrawal policy and public revision evidence. Decide whether stakes/units will be shown. No ROI or profitability claim should be introduced from incomplete pricing. |
 | Legal/privacy copy | General uncertainty/age/local-law language exists; no collection form, analytics, cookies or private backend is added by this PR. | Supply or approve applicable final terms, privacy and responsible-wagering copy, where each should appear, and any public contact/entity details required by the intended launch. Confirm the statement about site data practices and external Whop checkout matches the intended behavior. Do not invent contact details or jurisdiction-specific requirements. |

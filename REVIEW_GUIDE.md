@@ -38,9 +38,9 @@ Run npm run check and npm run build:check with Node 22 or newer; no dependencies
 
 Remaining engineering coverage: Firefox/Safari, physical devices, screen-reader output, additional forced-color palettes and a complete forced-colors traversal. The documented 400% section review is complete for that one window; it is not a universal accessibility certification.
 
-## Recorded owner decision
+## Recorded owner decisions
 
-Whop plan names and displayed prices are confirmed: All Access $35.99/month and Premium $9.99/month. See WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md. Other owner decisions remain pending, and both holds are explicitly retained.
+Whop plan names and displayed prices are confirmed: All Access $35.99/month and Premium $9.99/month. See WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md. Current branding, public copy and historical-result disclosures are also approved at b5f03924d0fc8a96a84512d04033f1ca3344823b; see BRAND-CONTENT-01 in LAUNCH_INPUTS.md. Publication/grading policy, legal/privacy, hosting/domain and release authorization remain pending. Both holds are explicitly retained.
 
 ## Holds and safe review
 
