@@ -11,3 +11,16 @@ Historical data is labeled self-reported and imported, with different category c
 All four tables and charts are available without JavaScript. JavaScript adds category selection, keeping the selected graph and its accessible table together. Native table disclosures, chart titles/descriptions and a horizontally scrollable table region support keyboard use. The page retains existing navigation and approved Whop links. No tracker accounts or backend are added.
 
 Validation: node scripts/check.mjs; node scripts/check-interactions.mjs; node scripts/check-records.mjs; node scripts/check-build.mjs. Review branch CI and browser rendering before production release.
+
+
+## November 8 reconciliation
+
+The public aggregates and dated tables now include November 2–8: Top 3 149–108 (57.98%); Main Premium 64–32 (66.67%). Top 3 added 12 wins and 9 losses; Main Premium added 4 wins and 3 losses. Dog and Play histories and opening balances are unchanged. Missing original prices do not prevent W/L grading; no replacement odds, stakes or private selections are published. Both affected graphs, accessible descriptions and coverage dates were updated together.
+
+The website record is a static historical import in index.html, separate from the live tracker admin and Supabase. For later updates, reconcile the workbook, append each dated cumulative row in the corresponding record panel, regenerate graph coordinates over its date range, update the summary and coverage dates, and adjust scripts/check-records.mjs expected totals. Run npm run check and npm run build:check before publishing. An update to the tracker admin alone does not update this website.
+
+## November 8 reconciliation
+
+The public aggregates and dated tables now include November 2–8: Top 3 149–108 (57.98%); Main Premium 64–32 (66.67%). Top 3 added 12 wins and 9 losses; Main Premium added 4 wins and 3 losses. Dog and Play histories and opening balances are unchanged. Missing original prices do not prevent W/L grading; no replacement odds, stakes or private selections are published. Both affected graphs, accessible descriptions and coverage dates were updated together.
+
+The website record is a static historical import in index.html, separate from the live tracker admin and Supabase. For later updates, reconcile the workbook, append each dated cumulative row in the corresponding record panel, regenerate graph coordinates over its date range, update the summary and coverage dates, and adjust scripts/check-records.mjs expected totals. Run npm run check and npm run build:check before publishing. An update to the tracker admin alone does not update this website.

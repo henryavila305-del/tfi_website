@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 const html = await readFile('index.html', 'utf8');
 const expected = [
-  { name:'Top 3', w:137, l:99, p:0 },
-  { name:'Premium / Max Bet', w:60, l:29, p:0 },
+  { name:'Top 3', w:149, l:108, p:0 },
+  { name:'Premium / Max Bet', w:64, l:32, p:0 },
   { name:'Dog of the Day', w:35, l:23, p:0 },
   { name:'Play of the Day', w:24, l:31, p:2 }
 ];
@@ -40,3 +40,4 @@ assert.match(html,/Net units and ROI are not presented/);
 assert.match(html,/Premium overlaps Top 3 on ten entries/);
 assert(!/TFI_Record_Tracker|source_chat|source_url|source_verified|tracker-ledger-row|bonus-parlay-row/.test(html),'Private import metadata must not ship');
 console.log('Passed four reconciled record tables, percentage arithmetic, chart bounds and category switching.');
+
