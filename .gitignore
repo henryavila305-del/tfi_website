@@ -1,2 +1,9 @@
 dist/
 node_modules/
+
+
+*.lock
+*.tmp
+.private-drafts/
+.env
+.env.*
