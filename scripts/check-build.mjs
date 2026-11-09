@@ -3,7 +3,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { renderPage } from './public-picks.mjs';
 
-const reviewedPage=renderPage(await readFile('index.html','utf8'),JSON.parse(await readFile('content/public-picks.json','utf8')));
+const reviewedPage=renderPage(await readFile('index.html','utf8'),JSON.parse(await readFile('content/public-picks.json','utf8')),JSON.parse(await readFile('content/public-results.json','utf8')));
 
 execFileSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
 const expected = ['app.js', 'favicon.svg', 'index.html', 'records.js', 'styles.css'];

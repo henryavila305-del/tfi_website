@@ -1,6 +1,6 @@
 # Manual public-pick preparation
 
-This is the first reviewed, operator-assisted publishing path for the main website. It does not provide an online admin account, Premium access, live scores, automatic grading or sportsbook integration. No actual picks are included in this branch.
+This is the first reviewed, operator-assisted publishing path for the main website. It does not provide an online admin account, Premium access, live scores, automatic grading or sportsbook integration. A dated November 8, 2026 public results card is included from owner-supplied information.
 
 ## Prepare a public card
 
@@ -36,3 +36,7 @@ These checks are operator-workflow guardrails, not tamper-proof or server-enforc
 - Existing imported historical graphs remain unchanged. Combining new results requires an explicit cutoff, overlap check and opening-balance reconciliation; it is not implemented here.
 - Premium entry and grading belong in a separately authenticated, private backend. Staging/account work remains paused. No public admin form or private-data store is added.
 - Production and the separate TFI Live Tracker are not changed by preparing or testing this branch.
+
+## Post-event dated results card
+
+content/public-results.json is a separate, strictly validated public-only format for owner-reported entries supplied after games began or finished. It preserves the event date in Eastern Time, null publication time and unknown stakes. The November 8 card has three reported wins and one unconfirmed result. Stale in-progress scores are not displayed as live scores. Premium selections remain outside this repository. No category membership is inferred and historical totals remain unchanged. New result updates must retain the previous content in reviewed Git history; a dedicated structured result-correction flow for these imported cards is not implemented.

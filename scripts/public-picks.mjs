@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { renderResults } from './public-results.mjs';
 
 const sports = ['NFL','NBA','MLB','NHL','NCAAF','NCAAB','WNBA'];
 const categories = ['Top 3','Play of the Day','Dog of the Day'];
@@ -62,8 +63,9 @@ export function renderPicks(ledger) {
   if (!ledger.picks.length) return '<div class="board"><div><span class="board-icon" aria-hidden="true">↗</span><h3>No free picks published yet.</h3><p>Approved public selections will appear here with odds, event time, reasoning and retained results.</p></div><aside><p class="eyebrow">PUBLIC PICKS ONLY</p><p>Premium selections remain in the member experience. No live score feed or automatic grading is connected.</p></aside></div>';
   return '<p class="disclosure">Manually recorded public picks. Results are self-reported. Recorded time is the preparation time, not independently verified website publication or proof of an executed bet. Event times are supplied by TFI. Odds may change.</p><div class="published-picks">'+[...ledger.picks].sort((a,b)=>b.eventStart.localeCompare(a.eventStart)||a.id.localeCompare(b.id)).map(p=>'<article class="public-pick"><p class="eyebrow">'+escape(p.sport)+' / '+escape(p.category)+'</p><h3>'+escape(p.selection)+'</h3><p><strong>'+escape(p.odds>0?'+'+p.odds:p.odds)+'</strong> American odds · '+escape(p.stakeUnits)+'u · <strong>'+escape(p.result)+'</strong></p><p>'+escape(p.reasoning)+'</p><p class="note">Event: <time datetime="'+p.eventStart+'">'+p.eventStart+'</time><br>Recorded: <time datetime="'+p.recordedAt+'">'+p.recordedAt+'</time></p>'+(p.history.length?'<details><summary>Result history ('+p.history.length+')</summary><ol>'+p.history.map(h=>'<li>'+escape(h.from)+' → '+escape(h.to)+' · '+escape(h.at)+'<br>'+escape(h.reason)+'</li>').join('')+'</ol></details>':'')+'</article>').join('')+'</div><p class="note">These picks are separate from the imported historical graphs. No automatic reconciliation or combined performance total is claimed.</p>';
 }
-export function renderPage(template,ledger) {
+export function renderPage(template,ledger,results={version:1,cards:[]}) {
   assert.equal(template.split('<!-- PUBLIC_PICKS_START -->').length,2,'Missing start marker');
   assert.equal(template.split('<!-- PUBLIC_PICKS_END -->').length,2,'Missing end marker');
-  return template.replace(/<!-- PUBLIC_PICKS_START -->[\s\S]*?<!-- PUBLIC_PICKS_END -->/,()=>'<!-- PUBLIC_PICKS_START -->'+renderPicks(ledger)+'<!-- PUBLIC_PICKS_END -->');
+  const content=renderResults(results)+(ledger.picks.length||!results.cards.length?renderPicks(ledger):'');
+  return template.replace(/<!-- PUBLIC_PICKS_START -->[\s\S]*?<!-- PUBLIC_PICKS_END -->/,()=>'<!-- PUBLIC_PICKS_START -->'+content+'<!-- PUBLIC_PICKS_END -->');
 }

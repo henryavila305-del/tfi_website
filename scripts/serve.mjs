@@ -6,7 +6,7 @@ const files = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': '
 http.createServer(async (req, res) => {
   const file = files[new URL(req.url, 'http://localhost').pathname];
   if (!file) { res.writeHead(404); res.end('Not found'); return; }
-  try { const content = file==='index.html'?renderPage(await readFile(file,'utf8'),JSON.parse(await readFile('content/public-picks.json','utf8'))):await readFile(file); res.writeHead(200, { 'Content-Type': `${types[file.slice(file.lastIndexOf('.'))]}; charset=utf-8`, 'X-Content-Type-Options': 'nosniff' }); res.end(content); }
+  try { const content = file==='index.html'?renderPage(await readFile(file,'utf8'),JSON.parse(await readFile('content/public-picks.json','utf8')),JSON.parse(await readFile('content/public-results.json','utf8'))):await readFile(file); res.writeHead(200, { 'Content-Type': `${types[file.slice(file.lastIndexOf('.'))]}; charset=utf-8`, 'X-Content-Type-Options': 'nosniff' }); res.end(content); }
   catch { res.writeHead(500); res.end('Unable to serve page'); }
 }).listen(4173, '127.0.0.1', () => console.log('Local: http://127.0.0.1:4173'));
 
