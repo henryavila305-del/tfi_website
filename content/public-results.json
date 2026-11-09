@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "cards": [
+    {
+      "id": "2026-11-08-public-results",
+      "eventDate": "2026-11-08",
+      "timezone": "America/New_York",
+      "type": "historical_entry",
+      "verification": "user_reported",
+      "publishedAt": null,
+      "selections": [
+        {
+          "id": "broncos-ml",
+          "audience": "public",
+          "sport": "NFL",
+          "selection": "Broncos ML",
+          "odds": -148,
+          "stakeUnits": null,
+          "result": "Win",
+          "score": "DEN 26-21 CAR"
+        },
+        {
+          "id": "giants-ml",
+          "audience": "public",
+          "sport": "NFL",
+          "selection": "Giants ML",
+          "odds": -155,
+          "stakeUnits": null,
+          "result": "Win",
+          "score": "NYG 19-11 PHI"
+        },
+        {
+          "id": "bruins-ml",
+          "audience": "public",
+          "sport": "NHL",
+          "selection": "Bruins ML",
+          "odds": -148,
+          "stakeUnits": null,
+          "result": "Win",
+          "score": "BOS 4-1 FLA"
+        }
+      ]
+    }
+  ]
+}
