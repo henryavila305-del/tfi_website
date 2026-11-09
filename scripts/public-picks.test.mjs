@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, mkdir, writeFile, rm, readdir } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { recordPick, gradePick, validateLedger, renderPicks, renderPage } from './public-picks.mjs';
 const blank=()=>({version:1,picks:[]});
 const input=()=>({id:'synthetic-test-one',audience:'public',sport:'NBA',category:'Top 3',selection:'Synthetic team ML',odds:-150,stakeUnits:1,eventStart:'2030-01-02T20:00:00Z',reasoning:'Synthetic test only.'});
@@ -39,4 +41,23 @@ test('empty content stays empty; rendering preserves historical section and chec
   const literal=renderPage(template,recordPick(blank(),{...input(),reasoning:'Literal $& and $` remain text'},before));
   assert(literal.includes('Literal $&amp; and $` remain text'));
   assert.deepEqual(validateLedger(JSON.parse(await readFile('content/public-picks.json','utf8'))),blank(),'No real or synthetic picks ship by default');
+});
+test('operator command appends once, cleans temporary files and refuses concurrent writers',async()=>{
+  const workspace=resolve('.');
+  const dir=await mkdtemp(join(workspace,'.tfi-publishing-test-'));
+  try {
+    await mkdir(join(dir,'content'));
+    await writeFile(join(dir,'content/public-picks.json'),JSON.stringify(blank()));
+    await writeFile(join(dir,'draft.json'),JSON.stringify({...input(),eventStart:new Date(Date.now()+3600000).toISOString()}));
+    const command=()=>spawnSync(process.execPath,[resolve('scripts/prepare-pick.mjs'),'record','draft.json'],{cwd:dir,encoding:'utf8'});
+    const prepared=command();assert.equal(prepared.status,0,prepared.stderr);
+    const first=await readFile(join(dir,'content/public-picks.json'),'utf8');
+    assert.equal(JSON.parse(first).picks.length,1);
+    assert.notEqual(command().status,0,'Duplicate must fail');
+    assert.equal(await readFile(join(dir,'content/public-picks.json'),'utf8'),first);
+    await writeFile(join(dir,'content/public-picks.json.lock'),'locked');
+    assert.notEqual(command().status,0,'Concurrent writer must fail');
+    assert.deepEqual((await readdir(join(dir,'content'))).sort(),['public-picks.json','public-picks.json.lock']);
+    assert.equal(await readFile(join(dir,'content/public-picks.json'),'utf8'),first);
+  } finally { assert(dir.startsWith(join(workspace,'.tfi-publishing-test-')));await rm(dir,{recursive:true,force:true}); }
 });
