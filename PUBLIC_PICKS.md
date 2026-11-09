@@ -6,7 +6,9 @@ Each future public entry requires exactly: id (unique lowercase slug), sport (NF
 
 All repository content is public, including test fixtures and commit history. Never put drafts, member picks, private approval conversations, credentials, workbook rows or source identifiers here. Only already-cleared public entries may ever be committed. Unknown fields fail validation; this is structural validation, not an automated privacy guarantee.
 
-Before enabling entries, obtain: the public selection policy and release timing; the approving person/process; odds capture policy; grading source and settlement timing; push/void, correction and withdrawal rules; and approved public explanations. Approval references must not contain private URLs or messages.
+The owner has confirmed the per-pick rule (PUBLIC-PICK-APPROVAL-01): every individual public pick requires the owner's individual approval before appearing; private/member picks are excluded. Each future approvalReference must refer to that pick's genuine owner approval using a public-safe identifier. The validator checks structure and cannot authenticate who approved a pick. A blanket policy approval is not an entry approval. Existing approved aggregate history is unaffected.
+
+Before enabling entries, obtain: release timing and the approval-record process; odds capture policy; grading source and settlement timing; push/void, correction and withdrawal rules; and approved public explanations. Approval references must not contain private URLs or messages.
 
 The build renders validated public entries into a dedicated HTML slot, escaping text and retaining native headings, descriptions and UTC time elements without JavaScript. The empty array preserves the reviewed empty state byte for byte. Approval metadata is never rendered. Synthetic tests and ignored local fixtures cover populated output without changing production content and prove that a direct build rejects nonempty content. Next phase: define settlement/correction evidence once grading rules are approved. Do not connect a tracker or database.
 

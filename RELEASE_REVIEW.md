@@ -18,7 +18,7 @@ Remaining coverage includes screen readers, Firefox/Safari, physical devices and
 
 ## Unresolved launch decisions
 
-Whop plan names and displayed prices are owner-confirmed (WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md). Current branding, public copy and historical-result disclosures are also owner-approved at b5f03924d0fc8a96a84512d04033f1ca3344823b (BRAND-CONTENT-01). Still needed: public selection/release/grading/correction policy, legal/privacy decisions, hosting/domain decisions and separate release authorization. Exact requested decisions and the existing evidence are in LAUNCH_INPUTS.md.
+Whop plan names and displayed prices are owner-confirmed (WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md). Current branding, public copy and historical-result disclosures are also owner-approved at b5f03924d0fc8a96a84512d04033f1ca3344823b (BRAND-CONTENT-01). The owner has also confirmed individual approval for each public pick and exclusion of private/member picks (PUBLIC-PICK-APPROVAL-01). Still needed: release timing/approval-record process, odds/grading/correction policy, legal/privacy decisions, hosting/domain decisions and separate release authorization. Exact requested decisions and the existing evidence are in LAUNCH_INPUTS.md.
 
 The Whop URLs are already implemented; do not describe them as absent. The confirmed plan/pricing record is in LAUNCH_INPUTS.md. Existing destinations remain subject to the final pre-release link check; no new independent checkout verification is claimed.
 

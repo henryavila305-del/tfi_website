@@ -40,7 +40,7 @@ Remaining engineering coverage: Firefox/Safari, physical devices, screen-reader 
 
 ## Recorded owner decisions
 
-Whop plan names and displayed prices are confirmed: All Access $35.99/month and Premium $9.99/month. See WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md. Current branding, public copy and historical-result disclosures are also approved at b5f03924d0fc8a96a84512d04033f1ca3344823b; see BRAND-CONTENT-01 in LAUNCH_INPUTS.md. Publication/grading policy, legal/privacy, hosting/domain and release authorization remain pending. Both holds are explicitly retained.
+Whop plan names and displayed prices are confirmed: All Access $35.99/month and Premium $9.99/month. See WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md. Current branding, public copy and historical-result disclosures are also approved at b5f03924d0fc8a96a84512d04033f1ca3344823b; see BRAND-CONTENT-01 in LAUNCH_INPUTS.md. Individual owner approval is now required for each public pick, with private/member picks excluded (PUBLIC-PICK-APPROVAL-01). Release timing, approval-record process, odds/grading/corrections, legal/privacy, hosting/domain and release authorization remain pending. Both holds are explicitly retained.
 
 ## Holds and safe review
 
