@@ -8,12 +8,14 @@ All repository content is public, including test fixtures and commit history. Ne
 
 Before enabling entries, obtain: the public selection policy and release timing; the approving person/process; odds capture policy; grading source and settlement timing; push/void, correction and withdrawal rules; and approved public explanations. Approval references must not contain private URLs or messages.
 
-The build renders validated public entries into a dedicated HTML slot, escaping text and retaining native headings, descriptions and UTC time elements without JavaScript. The empty array preserves the reviewed empty state byte for byte. Approval metadata is never rendered. Synthetic tests cover populated output in memory only and prove that a direct build rejects nonempty content. Next phase: define settlement/correction evidence once grading rules are approved. Do not connect a tracker or database.
+The build renders validated public entries into a dedicated HTML slot, escaping text and retaining native headings, descriptions and UTC time elements without JavaScript. The empty array preserves the reviewed empty state byte for byte. Approval metadata is never rendered. Synthetic tests and ignored local fixtures cover populated output without changing production content and prove that a direct build rejects nonempty content. Next phase: define settlement/correction evidence once grading rules are approved. Do not connect a tracker or database.
 
 Run npm run check and npm run build:check. The static output remains the existing five assets; content files and validation fixtures are not shipped. vercel.json disables Git-triggered deployments on this branch. No deployment, DNS, account, or billing action is included.
 
 ## Card styling and local review
 
-Cards use named article headings, explicit result text, wrapping metadata and reasoning, compact-card stacking, and system-color rules. See PICK_CARD_QA.md for the bounded Edge review and remaining checks. Run node scripts/preview-public-picks.mjs to generate ignored, script-free synthetic fixtures under work/pick-preview; these are never part of dist and do not alter the empty content list.
+Cards use named article headings, explicit result text, wrapping metadata and reasoning, compact-card stacking, and system-color rules. See PICK_CARD_QA.md for the bounded Edge review and remaining checks. Run node scripts/preview-public-picks.mjs to generate ignored synthetic fixtures under work/pick-preview (isolated and full-no-script variants omit scripts; full.html includes the real page scripts); these are never part of dist and do not alter the empty content list.
 
 The preview generator also creates full.html and full-no-script.html using the actual website and local assets. Populated rendering updates the board status count; the empty content still preserves the publication hold. npm run check includes full-page preview checks for IDs, ARIA, anchors, assets, historical isolation and the script-free fallback. See PICK_CARD_QA.md for targeted integration observations.
+
+Current review status and owner decisions are consolidated in [REVIEW_GUIDE.md](REVIEW_GUIDE.md) and [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md).

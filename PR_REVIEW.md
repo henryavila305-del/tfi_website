@@ -1,3 +1,5 @@
+> Evidence record from a specific development stage. For current scope, completed checks and remaining launch decisions, start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md). Later evidence may supersede a limitation recorded below.
+
 # PR #5 correctness and accessibility review — November 9, 2026
 
 Reviewed branch: development/public-picks-contract, starting at 47c0745e1e1b6211f1acd60580b3ce4e51d4fb66.

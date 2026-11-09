@@ -10,6 +10,10 @@ Requires Node 22 or newer, with no dependencies to install. Run npm run check, n
 
 See PUBLIC_PICKS.md for the strict public-entry contract and remaining owner decisions. content/public-picks.json remains empty and checks enforce that hold. A static renderer is prepared and tested with synthetic entries; no feed, database, collection form, analytics or private data integration is added.
 
+## Review PR #5
+
+Start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md) for scope, code-review order, automated checks and current browser evidence. [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md) lists the exact owner decisions still needed. PR #5 remains an open draft; this packet does not authorize merging or publishing.
+
 ## Current evidence and release hold
 
 PR #1 and historical-record PR #3 are merged. HISTORY_REVIEW.md describes the imported record. QA.md records historical browser evidence, not certification of subsequent page changes. RELEASE_REVIEW.md records remaining launch gates.

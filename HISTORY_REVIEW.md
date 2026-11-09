@@ -1,3 +1,5 @@
+> Evidence record from a specific development stage. For current scope, completed checks and remaining launch decisions, start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md). Later evidence may supersede a limitation recorded below.
+
 # Main website historical records
 
 This branch adds aggregate-only historical records to the main website. It is independent of draft Premium Tracker PR #2. No production merge, deployment, DNS, billing or database changes are part of this branch.

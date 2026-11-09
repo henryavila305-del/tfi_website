@@ -1,3 +1,5 @@
+> Evidence record from a specific development stage. For current scope, completed checks and remaining launch decisions, start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md). Later evidence may supersede a limitation recorded below.
+
 # Forced-colors and keyboard review — November 9, 2026
 
 Starting PR #5 commit: ec77fb7dc42ef997bb486f82ca9d7bbf10aef6a5.

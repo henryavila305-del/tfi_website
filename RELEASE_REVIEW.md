@@ -1,26 +1,29 @@
-# Current development review — November 9, 2026
+# Current release review
 
-Launch remains on hold. PR #1 and historical-record PR #3 have merged; earlier draft-only statements are historical.
+Development review is ready to inspect; launch is on hold. PR #5 remains an open draft. Use [REVIEW_GUIDE.md](REVIEW_GUIDE.md) as the current review entry point and [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md) as the current owner-decision checklist.
 
 ## Implemented
 
-Responsive navigation, six sport status links, native FAQ, an empty free-picks board, two Whop membership links, and four aggregate historical charts/tables. See HISTORY_REVIEW.md for scope, missing history, overlap and self-reported data disclosures. No live feed or private selections are present.
+The base website already contains responsive navigation, six sport links, native FAQ, enabled Whop plan links and four imported historical aggregate charts/tables. PR #5 adds validated static public-pick rendering, accessible card layouts, isolated/full-page synthetic previews, consistent populated-board status/copy, output safeguards and regression checks. It also fixes forced-color chart paints, narrow college-sport labels and adjacent membership-action spacing.
 
-The public-pick contract is validated, but a nonempty content list is intentionally rejected until publication is separately approved. The build includes a static renderer tested with synthetic entries. The empty publication hold remains enforced before output is written; no data connection is included. See PUBLIC_PICKS.md.
+Production picks remain empty. Direct builds reject nonempty lists. The output remains exactly five static assets; synthetic fixtures, contract files and approval references do not ship. No live feed or private tracker/database connection is added.
 
-Build output is exactly five existing public assets. No content fixtures, private source or approval documents ship. Vercel Git deployments are disabled by vercel.json on this branch. Existing hosted versions are unaffected.
+## Evidence
 
-## Remaining inputs
+Automated checks cover source links/ARIA/assets, simulated focus/menu/sports interactions, historical arithmetic/category selection, entry validation/rendering, full-page previews, heading-ID collisions, isolated direct-build failure paths and repeatable allowlisted output.
 
-- Confirm both implemented Whop URLs, plan names/prices, and public approval evidence. Implementation and automated assertions do not establish owner approval.
-- Approve current brand, public copy, membership statements and historical disclosures.
-- Approve public pick eligibility, release timing/timezone, approval process, odds policy, grading source, and correction/withdrawal/push/void handling.
-- Approve applicable legal/privacy copy for the intended site behavior.
-- Complete current-page browser/accessibility review. QA.md covers the older preview; historical charts and active links need their own current evidence.
-- Decide hosting/domain and authorize launch separately.
+Targeted Edge evidence includes script-omitted fallback, keyboard navigation, forced-colors emulation and the completed 400% section review in the documented window. See the evidence table in REVIEW_GUIDE.md for scope. QA.md is historical Phase 1 evidence, not the current release checklist.
 
-## Verification
+Remaining coverage includes screen readers, Firefox/Safari, physical devices and complete/multiple-palette forced-colors testing.
 
-Run npm run check and npm run build:check for this exact commit. Inspect its GitHub Actions result separately; prior successful runs do not validate changed source. The workflow has no publishing steps.
+## Unresolved launch decisions
 
-No tracker, Supabase, credentials, private picks, DNS, billing, or manual deployment changes are part of this slice.
+Record final Whop plan/price approval, current brand/content and historical-disclosure approval, public selection/release/grading/correction policy, legal/privacy copy, hosting/domain decisions and separate release authorization. Exact requested decisions and the existing evidence are in LAUNCH_INPUTS.md.
+
+The Whop URLs are already implemented; do not describe them as absent. Existing approval descriptions should be reconciled with the final plan/pricing record.
+
+## Holds
+
+vercel.json disables Git-triggered Vercel deployment on this branch. Existing hosted versions are unaffected. GitHub Actions validates only and does not publish.
+
+No merge, production deployment, domain connection, database, credential, private pick or billing change is authorized by this review packet.

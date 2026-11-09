@@ -1,3 +1,5 @@
+> Evidence record from a specific development stage. For current scope, completed checks and remaining launch decisions, start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md). Later evidence may supersede a limitation recorded below.
+
 # Synthetic public-pick card review — November 9, 2026
 
 ## Scope
@@ -17,7 +19,7 @@ Reproduce with node scripts/preview-public-picks.mjs and open work/pick-preview/
 
 ## Limits and next checks
 
-A narrow container is not an actual 320px device viewport. Physical phones, Firefox, Safari, screen-reader output, full forced-colors traversal, remain unverified. The earlier observations above use isolated fixtures; see the full-page review below for later evidence.
+A narrow container is not an actual 320px device viewport. Physical phones, Firefox, Safari, screen-reader output, full forced-colors traversal remain unverified. The earlier observations above use isolated fixtures; see the full-page review below for later evidence.
 
 Publication stays blocked for nonempty content. Builds enforce that hold before writing output; vercel.json continues to disable Git-triggered deployment. Run all Node checks and build verification against the exact reviewed commit.
 
