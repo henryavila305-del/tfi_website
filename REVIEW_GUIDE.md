@@ -30,6 +30,7 @@ Run npm run check and npm run build:check with Node 22 or newer; no dependencies
 
 | Evidence | Actual scope |
 | --- | --- |
+| [WITHDRAWAL_QA.md](WITHDRAWAL_QA.md) | Withdrawal source/markup and automated checks only; new narrow-width, keyboard and forced-colors browser checks remain unfinished. |
 | [PICK_CARD_QA.md](PICK_CARD_QA.md) | Isolated and full-page synthetic cards; native fallback and history integration; index to later evidence. |
 | [KEYBOARD_CONTRAST_QA.md](KEYBOARD_CONTRAST_QA.md) | Targeted forced-colors emulation, visible focus, compact Menu and keyboard history/table checks. |
 | [ZOOM_QA.md](ZOOM_QA.md) | Completed section-by-section 400% review in the documented Edge window, verified layout fixes and restored normal zoom. |

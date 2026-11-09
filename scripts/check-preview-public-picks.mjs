@@ -18,6 +18,15 @@ for (const html of [full,fallback]) {
   assert(html.includes('Win percentage: 50.0%'));
   assert(!html.includes('synthetic-withdrawal-reference'));
   assert(!html.includes('synthetic-only'),'Approval metadata must not render');
+  // Static withdrawal details must remain available without scripts or keyboard-only focus traps.
+  const withdrawalCard = html.match(/<article class="public-pick"[^>]*>[\s\S]*?<\/article>/g).find(card => card.includes('<dd>withdrawn</dd>'));
+  assert(withdrawalCard, 'Withdrawal is retained as a visible article');
+  const heading = withdrawalCard.match(/aria-labelledby="([^"]+)"/)[1];
+  assert(withdrawalCard.includes('<h3 id="' + heading + '">'), 'Withdrawal article has its own visible heading');
+  assert(!/aria-hidden|\bhidden\b|tabindex|<(?:a|button|input|select|textarea)\b/i.test(withdrawalCard), 'Static withdrawal content must not be hidden or introduce tab stops');
+  assert.match(withdrawalCard, /<dt>Withdrawal reason<\/dt><dd>Synthetic withdrawal only[^<]+<\/dd>/);
+  assert.match(withdrawalCard, /<dt>Withdrawn \(UTC\)<\/dt><dd><time datetime="2026-11-01T12:30:00.000Z">2026-11-01T12:30:00.000Z<\/time><\/dd>/);
+  assert(withdrawalCard.indexOf('<dt>Result</dt>') < withdrawalCard.indexOf('<dt>Withdrawal reason</dt>'), 'Status precedes withdrawal evidence in reading order');
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
   assert.equal(ids.length,new Set(ids).size,'Full page must have unique IDs');
   for (const [,refs] of html.matchAll(/aria-(?:labelledby|describedby|controls)="([^"]+)"/g))
