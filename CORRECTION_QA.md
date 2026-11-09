@@ -25,3 +25,11 @@ Additional regression checks exercise interleaved odds and result corrections, p
 Added a read-only transition validator and explicit-path CLI. Regression tests reject deletion/renaming of old picks, changed original odds/results or withdrawal evidence, removed/truncated corrections, rewritten reasons/timestamps/approval references, reordered same-time independent corrections, and self-consistent base/history rewrites. Valid appends, unchanged/frozen snapshots, reordered JSON keys and multiple pick records pass. CLI tests run only against an isolated temporary directory and verify unchanged real publication content.
 
 This provides a comparison against a supplied prior snapshot, not immutable storage. A trusted complete baseline and mandatory use in any future publication path remain unimplemented. Ordinary base-result updates, including transition into withdrawal, fail closed; a future event-based withdrawal lifecycle must preserve existing base/history instead.
+
+## Retention review: distinct baseline files
+
+Found and fixed a CLI gap: supplying the candidate file as both arguments previously passed, without comparing against an independent prior snapshot. The CLI now requires regular files and rejects matching resolved paths or matching filesystem device/inode identities, including hard-link aliases. Reads use the inspected open handles and handles close on failure.
+
+Added regression checks for same-path/path-alias/hard-link self-comparison, distinct files with unchanged records, malformed JSON, invalid prior contract and directory inputs. The tests use isolated temporary synthetic files and preserve real empty content. A separately copied or otherwise untrusted baseline still cannot be authenticated by file identity; trustworthy baseline selection and retention remain release gates.
+
+Local permission restrictions prevent the temporary hard-link fixture from being created; only that regression is reported as unavailable locally. CI must create and exercise it (CI environments do not skip it). No filesystem permissions were changed to run the test.

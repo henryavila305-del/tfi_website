@@ -138,7 +138,7 @@ const frozenPrior = JSON.parse(JSON.stringify(retained)), frozenNext = JSON.pars
 for(const pick of [frozenPrior,frozenNext]) { for(const item of pick.corrections) Object.freeze(item); Object.freeze(pick.corrections); Object.freeze(pick); }
 assert.equal(validatePublicPickTransition(Object.freeze([frozenPrior]),Object.freeze([frozenNext])).length,1);
 
-const {mkdtemp,writeFile,rm} = await import('node:fs/promises');
+const {mkdtemp,writeFile,rm,link} = await import('node:fs/promises');
 const {tmpdir} = await import('node:os');
 const {join,resolve,dirname,basename} = await import('node:path');
 const {spawnSync} = await import('node:child_process');
@@ -150,6 +150,27 @@ try {
   await writeFile(nextPath,JSON.stringify([appended]));
   const run = args => spawnSync(process.execPath,['scripts/check-public-pick-history.mjs',...args],{encoding:'utf8'});
   assert.equal(run([priorPath,nextPath]).status,0);
+  assert.match(run([nextPath,nextPath]).stderr,/distinct snapshot files/,'Self-comparison must not falsely certify history');
+  assert.match(run([join(historyDirectory,'.','next.json'),nextPath]).stderr,/distinct snapshot files/);
+  const aliasPath=join(historyDirectory,'candidate-alias.json');
+  let hardLinkAvailable = true;
+  try { await link(nextPath,aliasPath); } catch(error) {
+    if (process.env.CI || !['EPERM','EACCES','ENOTSUP'].includes(error.code)) throw error;
+    hardLinkAvailable = false;
+    console.log('Local filesystem cannot create hard links; hard-link alias regression remains mandatory in CI.');
+  }
+  if (hardLinkAvailable) assert.match(run([aliasPath,nextPath]).stderr,/distinct snapshot files/,'Hard-link aliases must not bypass the distinct-file guard');
+  await writeFile(nextPath,JSON.stringify([retained]));
+  assert.equal(run([priorPath,nextPath]).status,0,'Distinct files with unchanged records remain valid');
+  await writeFile(nextPath,'invalid JSON');
+  assert.notEqual(run([priorPath,nextPath]).status,0,'Malformed candidate must fail');
+  await writeFile(nextPath,JSON.stringify([appended]));
+  const invalidPriorPath=join(historyDirectory,'invalid-prior.json');
+  await writeFile(invalidPriorPath,'invalid JSON');
+  assert.notEqual(run([invalidPriorPath,nextPath]).status,0,'Malformed prior snapshot must fail');
+  await writeFile(invalidPriorPath,'{}');
+  assert.notEqual(run([invalidPriorPath,nextPath]).status,0,'Invalid prior contract must fail');
+  assert.notEqual(run([historyDirectory,nextPath]).status,0,'Directories are not snapshot files');
   assert.notEqual(run([]).status,0,'Missing explicit baseline must fail closed');
   assert.notEqual(run([join(historyDirectory,'missing.json'),nextPath]).status,0,'Missing baseline file must fail closed');
   await writeFile(nextPath,JSON.stringify([{...sample}]));
