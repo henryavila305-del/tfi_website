@@ -1,41 +1,13 @@
-# Current release review
+# Release review status
 
-Development review is ready to inspect; launch is on hold. PR #5 remains an open draft. Use [REVIEW_GUIDE.md](REVIEW_GUIDE.md) as the current review entry point and [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md) as the current owner-decision checklist.
+PR #5 remains an open, unmerged draft. Publication and deployment are blocked.
 
-## Implemented
+Use [REVIEW_GUIDE.md](REVIEW_GUIDE.md) as the single completed-safeguard and remaining-blocker checklist. [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md) preserves the version-specific owner approval records and exact missing inputs. [PUBLIC_PICKS.md](PUBLIC_PICKS.md) defines the current contract and retention limitations.
 
-The base website already contains responsive navigation, six sport links, native FAQ, enabled Whop plan links and four imported historical aggregate charts/tables. PR #5 adds validated static public-pick rendering, accessible card layouts, isolated/full-page synthetic previews, consistent populated-board status/copy, output safeguards and regression checks. It also fixes forced-color chart paints, narrow college-sport labels and adjacent membership-action spacing.
+The implemented slice includes static cards, synthetic withdrawals/corrections, preserved original odds, corrected-result statistics, prior-snapshot retention and distinct-file comparison guards. Real production content stays empty; direct builds reject nonempty picks and output exactly five allowlisted assets. The validation workflow has no publishing step.
 
-Production picks remain empty. Direct builds reject nonempty lists. The output remains exactly five static assets; synthetic fixtures, contract files and approval references do not ship. No live feed or private tracker/database connection is added.
+Current implementation evidence: head 0a094ba24dc72ce09c678ba48a8a718af53399f5 passed all four Node 22/24 Linux/Windows jobs in [run 42676409161](https://github.com/henryavila305-del/tfi_website/actions/runs/42676409161). Later heads require their own checks. Browser evidence is stage-specific; new withdrawal/correction browser checks remain unfinished.
 
-## Evidence
+Real-pick publication still requires trustworthy approval/publication/source evidence, a trusted retained baseline and event-based withdrawal lifecycle. Website release still requires legal/privacy approval, current accessibility/browser and destination review, hosting/DNS details and separate exact-commit release authorization. Selected plans, branding, rules, contact, primary domain, provider and project URL are already recorded.
 
-Automated checks cover source links/ARIA/assets, simulated focus/menu/sports interactions, historical arithmetic/category selection, entry validation/rendering, full-page previews, heading-ID collisions, isolated direct-build failure paths and repeatable allowlisted output.
-
-Targeted Edge evidence includes script-omitted fallback, keyboard navigation, forced-colors emulation and the completed 400% section review in the documented window. See the evidence table in REVIEW_GUIDE.md for scope. QA.md is historical Phase 1 evidence, not the current release checklist.
-
-Remaining coverage includes screen readers, Firefox/Safari, physical devices and complete/multiple-palette forced-colors testing.
-
-## Unresolved launch decisions
-
-Whop plan names and displayed prices are owner-confirmed (WHOP-PLAN-PRICE-01 in LAUNCH_INPUTS.md). Current branding, public copy and historical-result disclosures are also owner-approved at b5f03924d0fc8a96a84512d04033f1ca3344823b (BRAND-CONTENT-01). The owner has also confirmed individual approval for each public pick and exclusion of private/member picks (PUBLIC-PICK-APPROVAL-01). Pre-event-only posting, UTC publication times and no backdating are also owner-confirmed (PUBLIC-PICK-TIMING-01). Before real entries can be enabled, actual-first-publication evidence must enforce that rule; validating typed dates alone is insufficient. DraftKings is selected for recorded odds and ESPN for final-result reference (PUBLIC-PICK-SOURCES-01). No source integration is connected. The owner also confirmed capture at first public posting, original-price preservation and separate corrections (PUBLIC-PICK-PRICE-01); that evidence/history implementation is still gated. The owner approved individual approval before posting each grade; win percentage calculated as wins / (wins + losses), excluding pushes and voids; postponed games remaining pending until the owner approves a final outcome; and visible grading corrections (PUBLIC-PICK-GRADING-01). DraftKings New York is the selected odds-source jurisdiction (PUBLIC-PICK-JURISDICTION-01); the owner's answer was NYC, recorded as New York (NY), United States. Public performance reporting is limited to win/loss records for now; stake amounts, net units, profit and ROI remain withheld (PUBLIC-PICK-METRICS-01). This retains the approved win-percentage calculation and transparent push/void/pending statuses; recorded pick odds and membership prices are not profit claims. Withdrawing a public pick requires individual owner approval; the entry must remain visible with a reason and UTC withdrawal time, and be excluded from win percentage (PUBLIC-PICK-WITHDRAWAL-01). Still needed: approval-record details, exact wager-market context and source evidence, grade-approval and visible revision implementation, trusted withdrawal-approval evidence and retained history controls, legal/privacy decisions, Vercel target environment, DNS ownership and redirect decisions, and separate domain-connection/release authorization. Exact requested decisions and the existing evidence are in LAUNCH_INPUTS.md.
-
-The Whop URLs are already implemented; do not describe them as absent. The confirmed plan/pricing record is in LAUNCH_INPUTS.md. Existing destinations remain subject to the final pre-release link check; no new independent checkout verification is claimed.
-
-## Holds
-
-vercel.json disables Git-triggered Vercel deployment on this branch. Existing hosted versions are unaffected. GitHub Actions validates only and does not publish.
-
-No merge, production deployment, domain connection, database, credential, private pick or billing change is authorized by this review packet.
-
-The owner selected Twitter/X @thefavindex as the website's public contact (PUBLIC-CONTACT-01), using https://x.com/thefavindex. No public email address was supplied. A plain footer link is prepared in this draft; no social embed, email address or outbound message is added. Legal/privacy and entity details remain separate inputs. Publication and deployment stay blocked.
-
-The owner confirmed thefavindex.com as the website's primary domain (PRIMARY-DOMAIN-01). This records the intended domain only; domain connection, DNS changes, redirects and deployment are not authorized. Both holds remain enforced.
-
-Vercel is the owner-approved planned hosting provider (HOSTING-PROVIDER-01). This selects the provider only; no project creation/linking, account changes, deployment or domain connection is authorized. The future target environment and deployment method remain unresolved; project identity is recorded in HOSTING-PROJECT-URL-01. Both holds remain enforced.
-
-The owner initially supplied "the favorite index" as a hosting-name hint (HOSTING-PROJECT-NAME-01); the later screenshot resolves the project URL and scope under HOSTING-PROJECT-URL-01. The dashboard URL and displayed account/team scope are now supplied; no live account audit is claimed. No hosting settings changed; both holds remain enforced.
-
-Owner-supplied screenshot evidence (HOSTING-PROJECT-URL-01) identifies the dashboard URL as https://vercel.com/henryavila305-8922/the-favorite-index, project slug the-favorite-index, and URL account/team scope henryavila305-8922. The screenshot shows an existing Ready production deployment from main at fae4e41, with www.thefavindex.com and the-favorite-index.vercel.app listed. This is screenshot evidence, not a live hosting audit or verification of account permissions, DNS ownership, apex redirects or current external settings. PR #5 publication and deployment remain blocked; no external settings changed.
-
-Synthetic withdrawal implementation: withdrawn entries require explicit withdrawal approval/reference, a safe reason and UTC withdrawal time at or after publication. Cards retain pick details, hide approval metadata and exclude withdrawals from the separate public-board win percentage. Negative and full-page synthetic checks cover these behaviors; the real board stays empty. This does not implement trusted approval capture or append-only history, and does not authorize publication/deployment.
+This packet authorizes no merge, publication, deployment, domain/DNS, account, credential, private-data or billing change. Existing hosted versions are unaffected.
