@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { renderPublicPicks } from './render-public-picks.mjs';
 const template = await readFile('index.html', 'utf8');
 const start = '<!-- public-picks:start -->', end = '<!-- public-picks:end -->';
@@ -28,13 +27,10 @@ assert.throws(()=>renderPublicPicks(template,[{...sample,publicApproved:false}])
 assert.throws(()=>renderPublicPicks('<!-- public-picks:start --><!-- public-picks:status -->WAIT<!-- public-picks:status-end --><!-- public-picks:end -->',[]), /overlap/);
 assert(renderPublicPicks(template,[sample,{...sample,id:'second-test'}]).includes('PUBLIC PICKS · 2'));
 assert.throws(()=>renderPublicPicks(template,[{...sample,selection:'<script>alert(1)</script>'}]));
-// Prove a direct build cannot publish even a structurally valid synthetic pick.
-// Always restore the repository's empty content file.
-const original = await readFile('content/public-picks.json');
-try {
-  await writeFile('content/public-picks.json', JSON.stringify([sample]));
-  const build = spawnSync(process.execPath,['scripts/build.mjs'],{encoding:'utf8'});
-  assert.notEqual(build.status,0);
-  assert.match(build.stderr,/Public publication remains on hold/);
-} finally { await writeFile('content/public-picks.json',original); }
-console.log('Passed static rendering, escaping, all results, slot boundaries, empty fallback, and direct-build publication hold.');
+// Prevent accessible-name references from pointing at an existing page element.
+for (const attribute of ['id="public-pick-synthetic-render-only"', "id='public-pick-synthetic-render-only'", 'id=public-pick-synthetic-render-only']) {
+  assert.throws(()=>renderPublicPicks(template + '<div ' + attribute + '></div>',[sample]), /heading ID conflicts/);
+}
+// IDs inside the replaced slot do not survive and should not block valid rendering.
+assert(renderPublicPicks(template.replace(start,start+'<div id="public-pick-synthetic-render-only"></div>'),[sample]).includes('PUBLIC PICKS · 1'));
+console.log('Passed rendering, escaping, result labels, slot boundaries, empty fallback and accessible heading ID collision checks.');

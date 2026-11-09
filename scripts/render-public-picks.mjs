@@ -16,6 +16,11 @@ export function renderPublicPicks(template, picks) {
   const statusFromTemplate = template.indexOf(statusStart), statusToTemplate = template.indexOf(statusEnd) + statusEnd.length;
   if (!(statusToTemplate <= template.indexOf(start) || statusFromTemplate >= to + end.length)) throw new Error('Public-picks slots must not overlap');
   if (picks.length === 0) return template;
+  const retained = template.slice(0, template.indexOf(start)) + template.slice(to + end.length);
+  const retainedIds = new Set([...retained.matchAll(/\s+id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)].map(match => match[1] ?? match[2] ?? match[3]));
+  for (const pick of picks) {
+    if (retainedIds.has('public-pick-' + pick.id)) throw new Error('Public pick heading ID conflicts with the page: ' + pick.id);
+  }
   const cards = picks.map(pick => {
     const text = key => escapeHtml(pick[key]);
     const odds = pick.odds > 0 ? '+' + pick.odds : String(pick.odds);

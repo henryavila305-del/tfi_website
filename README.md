@@ -4,7 +4,7 @@ Standalone static public website with responsive navigation, an empty free-picks
 
 ## Local review
 
-Requires Node 22 or newer, with no dependencies to install. Run npm run check, npm run build:check, then npm run dev. Open http://127.0.0.1:4173. Build verification checks the exact five public assets twice against source.
+Requires Node 22 or newer, with no dependencies to install. Run npm run check, npm run build:check, then npm run dev. Open http://127.0.0.1:4173. Build verification checks the exact five public assets twice against source. Direct builds also refuse unexpected output files; move any unreviewed files out of dist before rebuilding. Negative build tests run in an isolated temporary fixture.
 
 ## Public picks preparation
 
