@@ -1,3 +1,5 @@
+> Historical evidence: this file describes the original Phase 1 preview. Current main includes active Whop links, historical charts/tables and five build assets. The disabled-link, empty-results and four-file observations below do not describe current behavior. See RELEASE_REVIEW.md for current gates; rerun browser checks against the current page before launch.
+
 # Phase 1 review — November 8, 2026
 
 Branch: `design/tfi-website-phase1`. Draft PR only; production remains on hold.

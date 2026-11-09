@@ -1,30 +1,19 @@
-# The Favorite Index — Phase 1
+# The Favorite Index
 
-Standalone public website preview. Responsive black, charcoal, and electric-green design with accessible navigation, free picks, results, sports exploration, Premium entry, and methodology.
+Standalone static public website with responsive navigation, an empty free-picks board, six-sport public status panel, two Whop membership links, and four imported historical aggregate records. Historical selections remain private; net units and ROI are withheld.
 
 ## Local review
 
-Requires Node.js 22 or newer. Run `npm run check`, `npm run build`, then `npm run dev`. Open http://127.0.0.1:4173. Static build output is in `dist/` (ignored by Git). No dependencies to install.
+Requires Node 22 or newer, with no dependencies to install. Run npm run check, npm run build:check, then npm run dev. Open http://127.0.0.1:4173. Build verification checks the exact five public assets twice against source.
 
-`npm run build:check` builds twice and verifies that output contains exactly the four public assets, matching source byte for byte. If npm is unavailable, run `node scripts/check.mjs`, `node scripts/check-interactions.mjs`, `node scripts/check-build.mjs`, and `node scripts/serve.mjs` directly.
+## Public picks preparation
 
-## Automated validation
+See PUBLIC_PICKS.md for the strict public-entry contract and remaining owner decisions. content/public-picks.json remains empty and checks enforce that hold. No feed, renderer, database, collection form, analytics or private data integration is added.
 
-The PR validation workflow runs source/content checks, simulated focus/menu transitions, repeatable build checks, and whitespace validation on Node 22/24 on Linux and Windows. It requests read-only repository contents and disables persisted checkout credentials. It has no deployment, publishing, or domain steps. These checks do not replace the remaining browser/device and screen-reader review in QA.md.
+## Current evidence and release hold
 
-## Content boundaries
+PR #1 and historical-record PR #3 are merged. HISTORY_REVIEW.md describes the imported record. QA.md records historical browser evidence, not certification of subsequent page changes. RELEASE_REVIEW.md records remaining launch gates.
 
-- No fabricated selections, statistics, odds, or returns. Picks and results are explicitly empty.
-- Premium entry stays disabled until a verified official TFI Whop URL is supplied. No private selections or membership data.
-- Sports links update a public-status panel; these are not live data pages.
-- Methodology describes publication requirements, not an operational model or verified feed.
-- No analytics, cookies, forms, payments, remote fonts, APIs, or secrets.
-- Navigation and FAQ work without JavaScript; mobile menu and sport panel are progressive enhancements.
+The validation workflow runs checks on Node 22/24 and Linux/Windows, with read-only repository permissions and no publishing steps. vercel.json disables automatic Git-triggered Vercel deployment on this branch; this does not remove an existing hosted version.
 
-## Release hold
-
-See RELEASE_REVIEW.md for the content review, verified engineering evidence, and remaining launch gates. See QA.md for exact browser coverage and limitations.
-
-Draft PR only. Do not merge, deploy, connect thefavindex.com, or modify TFI Live Tracker, Supabase, picks, or credentials. No deployment workflow is included.
-
-Before a separately authorized launch: approve brand and content, supply the official Whop URL, approve grading rules and public publication process, complete browser/accessibility review, and review applicable legal/privacy copy. Domain and hosting decisions are outside Phase 1.
+Before launch, confirm current Whop destinations/prices and approval evidence, approve brand/public copy and legal/privacy text, complete current-page accessibility/browser review, and decide hosting/domain separately. Public pick publication additionally needs approved release and grading rules. Do not connect private trackers, Supabase, credentials, or the purchased domain.
