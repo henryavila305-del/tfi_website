@@ -27,3 +27,5 @@ The owner selected Twitter/X @thefavindex as the website's public contact (PUBLI
 The owner confirmed thefavindex.com as the website's primary domain (PRIMARY-DOMAIN-01). This records the intended domain only; domain connection, DNS changes, redirects and deployment are not authorized. Both holds remain enforced.
 
 Vercel is the owner-approved planned hosting provider (HOSTING-PROVIDER-01). This selects the provider only; no project creation/linking, account changes, deployment or domain connection is authorized. The Vercel project/team/environment and deployment method remain unresolved. Both holds remain enforced.
+
+The owner supplied "the favorite index" as the hosting name (HOSTING-PROJECT-NAME-01). It is recorded verbatim as a project-name hint only; no Vercel project URL, unique project identifier, team/account scope or environment was supplied or verified. The dashboard project URL is still required to resolve the intended project/team. No hosting settings changed; both holds remain enforced.
