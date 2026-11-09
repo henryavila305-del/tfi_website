@@ -1,9 +1,13 @@
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { renderPage } from './public-picks.mjs';
+import feed from '../api/public-feed.js';
 const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
-const files = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/favicon.svg': 'favicon.svg', '/records.js': 'records.js' };
+const files = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/favicon.svg': 'favicon.svg', '/records.js': 'records.js', '/feed.js': 'feed.js' };
 http.createServer(async (req, res) => {
+  if(new URL(req.url,'http://localhost').pathname==='/api/public-feed'){
+    res.status=code=>{res.statusCode=code;return res;};res.json=data=>{res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(data));};return feed(req,res);
+  }
   const file = files[new URL(req.url, 'http://localhost').pathname];
   if (!file) { res.writeHead(404); res.end('Not found'); return; }
   try { const content = file==='index.html'?renderPage(await readFile(file,'utf8'),JSON.parse(await readFile('content/public-picks.json','utf8')),JSON.parse(await readFile('content/public-results.json','utf8'))):await readFile(file); res.writeHead(200, { 'Content-Type': `${types[file.slice(file.lastIndexOf('.'))]}; charset=utf-8`, 'X-Content-Type-Options': 'nosniff' }); res.end(content); }

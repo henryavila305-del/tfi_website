@@ -33,3 +33,5 @@
 .published-picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.5rem;margin-top:2rem}.public-pick{padding:1.5rem;border:1px solid #3b4536;border-radius:8px;overflow-wrap:anywhere}.public-pick h3{font-size:1.4rem}.public-pick details{margin-top:1rem}.public-pick summary{cursor:pointer}.public-pick time{font-variant-numeric:tabular-nums}
 
 .dated-results{margin-top:2rem}.dated-results h3{font-size:1.6rem}.public-pick h4{font-size:1.4rem;margin:.6rem 0}.card-record{color:#c0ff59;font-weight:700}
+
+#connected-feed{margin-top:2rem;padding:1.5rem;border:1px solid #3b4536;border-radius:8px}.feed-controls{display:flex;align-items:center;flex-wrap:wrap;gap:1rem;margin:1rem 0}.feed-controls input{padding:.7rem;background:#1c241b;color:#f2f5ec;border:1px solid #718463;border-radius:6px;font:inherit;color-scheme:dark}.feed-controls button:disabled{opacity:.6;cursor:wait}#connected-feed [role=status]{color:#c1cabb;min-height:3em}
