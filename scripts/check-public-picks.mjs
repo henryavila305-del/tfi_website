@@ -40,3 +40,38 @@ assert.deepEqual(summarizePublicPicks([...mixed,withdrawn]), summarizePublicPick
 assert.equal(summarizePublicPicks([...mixed,withdrawn]).winPercentage, 200 / 3);
 assert.throws(() => summarizePublicPicks([{...withdrawn,withdrawalApproved:false}]));
 console.log('Passed synthetic withdrawal approval, evidence, time ordering and win-percentage exclusion.');
+
+const correction = {field:'odds',from:-110,to:-105,correctedAt:'2026-11-01T12:15:00.000Z',reason:'Synthetic recording error only',publicApproved:true,approvalReference:'synthetic-correction-approval'};
+const corrected = {...sample,corrections:[correction]};
+const snapshot = JSON.stringify(corrected);
+assert.equal(validatePublicPicks([corrected]).length,1);
+assert.deepEqual(summarizePublicPicks([corrected]),{wins:0,losses:0,winPercentage:null});
+assert.equal(JSON.stringify(corrected),snapshot,'Validation and statistics must not mutate original odds/history');
+assert.equal(corrected.odds,-110);
+assert.equal(validatePublicPicks([{...corrected,corrections:[correction,{...correction,from:-105,to:105,correctedAt:'2026-11-01T12:20:00.000Z'}]}]).length,1);
+for (const patch of [
+  {field:'selection'}, {from:-115}, {to:-110}, {to:0}, {to:Infinity}, {to:'-105'},
+  {publicApproved:false}, {publicApproved:'true'}, {approvalReference:''}, {reason:' '},
+  {reason:'<script>'}, {reason:'x'.repeat(2001)}, {approvalReference:'<private>'},
+  {correctedAt:'2026-11-01T11:00:00.000Z'}, {correctedAt:'2026-02-30T12:15:00.000Z'},
+  {correctedAt:'2026-11-01T12:15:00+00:00'}, {privateNotes:'private'}
+]) assert.throws(()=>validatePublicPicks([{...sample,corrections:[{...correction,...patch}]}]));
+for (const key of Object.keys(correction)) {
+  const missing={...correction}; delete missing[key];
+  assert.throws(()=>validatePublicPicks([{...sample,corrections:[missing]}]));
+}
+for (const corrections of [null,{},[],[null],Array(101).fill(correction)])
+  assert.throws(()=>validatePublicPicks([{...sample,corrections}]));
+assert.throws(()=>validatePublicPicks([{...sample,corrections:[correction,{...correction,from:-105,to:105,correctedAt:'2026-11-01T12:10:00.000Z'}]}]));
+const grade = {...correction,field:'result',from:'pending',to:'win',correctedAt:'2026-11-01T14:00:00.000Z'};
+const graded = {...sample,corrections:[correction,grade]};
+assert.deepEqual(summarizePublicPicks([graded]),{wins:1,losses:0,winPercentage:100});
+assert.equal(graded.result,'pending','Original result remains recorded');
+const revised = {...sample,corrections:[grade,{...grade,from:'win',to:'loss',correctedAt:'2026-11-01T15:00:00.000Z'}]};
+assert.deepEqual(summarizePublicPicks([revised]),{wins:0,losses:1,winPercentage:0});
+for(const to of ['pending','push','void']) assert.equal(summarizePublicPicks([{...sample,result:'win',corrections:[{...grade,from:'win',to}]}]).winPercentage,null);
+for(const patch of [{to:'withdrawn'},{to:'unknown'},{correctedAt:'2026-11-01T12:30:00.000Z'}])
+  assert.throws(()=>validatePublicPicks([{...sample,corrections:[{...grade,...patch}]}]));
+assert.throws(()=>validatePublicPicks([{...withdrawn,corrections:[{...grade,from:'withdrawn'}]}]));
+assert.equal(summarizePublicPicks([{...withdrawn,corrections:[correction]}]).winPercentage,null);
+console.log('Passed synthetic correction chains, approval, canonical chronology, original-value preservation and corrected statistics.');

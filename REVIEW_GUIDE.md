@@ -30,6 +30,7 @@ Run npm run check and npm run build:check with Node 22 or newer; no dependencies
 
 | Evidence | Actual scope |
 | --- | --- |
+| [CORRECTION_QA.md](CORRECTION_QA.md) | Synthetic correction-chain validation, original odds/result preservation, visible static history and effective-result statistics; no new browser verification. |
 | [WITHDRAWAL_QA.md](WITHDRAWAL_QA.md) | Withdrawal source/markup and automated checks only; new narrow-width, keyboard and forced-colors browser checks remain unfinished. |
 | [PICK_CARD_QA.md](PICK_CARD_QA.md) | Isolated and full-page synthetic cards; native fallback and history integration; index to later evidence. |
 | [KEYBOARD_CONTRAST_QA.md](KEYBOARD_CONTRAST_QA.md) | Targeted forced-colors emulation, visible focus, compact Menu and keyboard history/table checks. |
@@ -61,3 +62,5 @@ The owner initially supplied "the favorite index" as a hosting-name hint (HOSTIN
 Owner-supplied screenshot evidence (HOSTING-PROJECT-URL-01) identifies the dashboard URL as https://vercel.com/henryavila305-8922/the-favorite-index, project slug the-favorite-index, and URL account/team scope henryavila305-8922. The screenshot shows an existing Ready production deployment from main at fae4e41, with www.thefavindex.com and the-favorite-index.vercel.app listed. This is screenshot evidence, not a live hosting audit or verification of account permissions, DNS ownership, apex redirects or current external settings. PR #5 publication and deployment remain blocked; no external settings changed.
 
 Synthetic withdrawal implementation: withdrawn entries require explicit withdrawal approval/reference, a safe reason and UTC withdrawal time at or after publication. Cards retain pick details, hide approval metadata and exclude withdrawals from the separate public-board win percentage. Negative and full-page synthetic checks cover these behaviors; the real board stays empty. This does not implement trusted approval capture or append-only history, and does not authorize publication/deployment.
+
+Synthetic correction history is implemented; see PUBLIC_PICKS.md and CORRECTION_QA.md. Trusted approval/source capture and durable retention remain gates. Neither hold is lifted.

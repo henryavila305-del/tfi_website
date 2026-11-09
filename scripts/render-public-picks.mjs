@@ -1,4 +1,4 @@
-import { validatePublicPicks, summarizePublicPicks } from './public-picks.mjs';
+import { validatePublicPicks, summarizePublicPicks, effectivePublicResult } from './public-picks.mjs';
 const start = '<!-- public-picks:start -->';
 const end = '<!-- public-picks:end -->';
 function escapeHtml(value) {
@@ -24,13 +24,18 @@ export function renderPublicPicks(template, picks) {
   const cards = picks.map(pick => {
     const text = key => escapeHtml(pick[key]);
     const odds = pick.odds > 0 ? '+' + pick.odds : String(pick.odds);
+    const history = pick.corrections?.length ? '<h4>Correction history</h4><ol>' + pick.corrections.map(correction =>
+      '<li><p>' + (correction.field === 'odds' ? 'Recorded odds' : 'Result') + ': ' + escapeHtml(correction.from) + ' → ' + escapeHtml(correction.to)
+      + '. Corrected (UTC): <time datetime="' + escapeHtml(correction.correctedAt) + '">' + escapeHtml(correction.correctedAt) + '</time>. Reason: ' + escapeHtml(correction.reason) + '</p></li>'
+    ).join('') + '</ol>' : '';
+    const originalResult = pick.corrections?.some(correction => correction.field === 'result') ? '<dt>Originally recorded result</dt><dd>' + text('result') + '</dd>' : '';
     const withdrawal = pick.result === 'withdrawn'
       ? '<dt>Withdrawal reason</dt><dd>' + text('withdrawalReason') + '</dd><dt>Withdrawn (UTC)</dt><dd><time datetime="' + text('withdrawnAt') + '">' + text('withdrawnAt') + '</time></dd>' : '';
     return '<article class="public-pick" aria-labelledby="public-pick-' + text('id') + '"><h3 id="public-pick-' + text('id') + '">' + text('sport') + ' — ' + text('selection') + '</h3>'
-      + '<dl><dt>Market</dt><dd>' + text('market') + '</dd><dt>American odds</dt><dd>' + odds + '</dd>'
+      + '<dl><dt>Market</dt><dd>' + text('market') + '</dd><dt>American odds (original)</dt><dd>' + odds + '</dd>'
       + '<dt>Published (UTC)</dt><dd><time datetime="' + text('publishedAt') + '">' + text('publishedAt') + '</time></dd>'
       + '<dt>Event (UTC)</dt><dd><time datetime="' + text('eventAt') + '">' + text('eventAt') + '</time></dd>'
-      + '<dt>Result</dt><dd>' + text('result') + '</dd>' + withdrawal + '</dl><p>' + text('reasoning') + '</p></article>';
+      + '<dt>Result</dt><dd>' + escapeHtml(effectivePublicResult(pick)) + '</dd>' + originalResult + withdrawal + '</dl><p>' + text('reasoning') + '</p>' + history + '</article>';
   }).join('\n');
   const summary = summarizePublicPicks(picks);
   const percentage = summary.winPercentage === null ? 'Not available (no wins or losses)' : summary.winPercentage.toFixed(1) + '%';

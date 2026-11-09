@@ -48,3 +48,20 @@ const mixedHtml = renderPublicPicks(template,[withdrawn,{...sample,id:'synthetic
 assert(mixedHtml.includes('Win percentage: 50.0%'));
 assert(mixedHtml.includes('Pending, push, void and withdrawn picks are excluded.'));
 console.log('Passed retained withdrawal cards, escaped reasons, UTC times, hidden approval references and rendered percentage.');
+
+const correction = {field:'odds',from:110,to:105,correctedAt:'2026-11-01T12:15:00.000Z',reason:'Synthetic A & B "recording error"',publicApproved:true,approvalReference:'hidden-correction-reference'};
+const corrected = {...sample,corrections:[correction,{...correction,field:'result',from:'pending',to:'loss',correctedAt:'2026-11-01T14:00:00.000Z'}]};
+const before = JSON.stringify(corrected);
+const correctionHtml = renderPublicPicks(template,[corrected]);
+assert(correctionHtml.includes('<dt>American odds (original)</dt><dd>+110</dd>'));
+assert(correctionHtml.includes('<dt>Result</dt><dd>loss</dd><dt>Originally recorded result</dt><dd>pending</dd>'));
+assert(correctionHtml.includes('<h4>Correction history</h4><ol>'));
+assert(correctionHtml.includes('Recorded odds: 110 → 105'));
+assert(correctionHtml.includes('Result: pending → loss'));
+assert(correctionHtml.includes('Synthetic A &amp; B &quot;recording error&quot;'));
+assert(correctionHtml.includes('<time datetime="'+correction.correctedAt+'">'+correction.correctedAt+'</time>'));
+assert(!correctionHtml.includes(correction.approvalReference));
+assert(correctionHtml.includes('Public record: 0 wins, 1 losses. Win percentage: 0.0%'));
+assert.equal(JSON.stringify(corrected),before,'Rendering must not overwrite original records');
+assert(!renderPublicPicks(template,[sample]).includes('Correction history'));
+console.log('Passed visible escaped correction history, original odds/result, hidden approvals and effective grade rendering.');
