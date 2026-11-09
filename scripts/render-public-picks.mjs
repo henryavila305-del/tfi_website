@@ -14,7 +14,7 @@ export function renderPublicPicks(template, picks) {
   const cards = picks.map(pick => {
     const text = key => escapeHtml(pick[key]);
     const odds = pick.odds > 0 ? '+' + pick.odds : String(pick.odds);
-    return '<article class="public-pick"><h3>' + text('sport') + ' — ' + text('selection') + '</h3>'
+    return '<article class="public-pick" aria-labelledby="public-pick-' + text('id') + '"><h3 id="public-pick-' + text('id') + '">' + text('sport') + ' — ' + text('selection') + '</h3>'
       + '<dl><dt>Market</dt><dd>' + text('market') + '</dd><dt>American odds</dt><dd>' + odds + '</dd>'
       + '<dt>Published (UTC)</dt><dd><time datetime="' + text('publishedAt') + '">' + text('publishedAt') + '</time></dd>'
       + '<dt>Event (UTC)</dt><dd><time datetime="' + text('eventAt') + '">' + text('eventAt') + '</time></dd>'

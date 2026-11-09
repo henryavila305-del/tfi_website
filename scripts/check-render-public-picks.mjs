@@ -12,6 +12,8 @@ assert.equal(rendered.split(end)[1],template.split(end)[1]);
 assert(rendered.includes('Synthetic A &amp; B &quot;quoted&quot;'));
 assert(rendered.includes('Synthetic &#39;market&#39;'));
 assert(rendered.includes('<dd>+110</dd>'));
+assert(rendered.includes('aria-labelledby="public-pick-synthetic-render-only"'));
+assert(rendered.includes('<h3 id="public-pick-synthetic-render-only">'));
 assert(rendered.includes('<time datetime="' + sample.publishedAt + '">'));
 assert(!rendered.includes(sample.approvalReference), 'Approval metadata must not render');
 assert(!rendered.includes('No free picks published yet.'));

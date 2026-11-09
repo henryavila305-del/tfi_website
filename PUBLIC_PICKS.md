@@ -11,3 +11,7 @@ Before enabling entries, obtain: the public selection policy and release timing;
 The build renders validated public entries into a dedicated HTML slot, escaping text and retaining native headings, descriptions and UTC time elements without JavaScript. The empty array preserves the reviewed empty state byte for byte. Approval metadata is never rendered. Synthetic tests cover populated output in memory only and prove that a direct build rejects nonempty content. Next phase: define settlement/correction evidence once grading rules are approved. Do not connect a tracker or database.
 
 Run npm run check and npm run build:check. The static output remains the existing five assets; content files and validation fixtures are not shipped. vercel.json disables Git-triggered deployments on this branch. No deployment, DNS, account, or billing action is included.
+
+## Card styling and local review
+
+Cards use named article headings, explicit result text, wrapping metadata and reasoning, compact-card stacking, and system-color rules. See PICK_CARD_QA.md for the bounded Edge review and remaining checks. Run node scripts/preview-public-picks.mjs to generate ignored, script-free synthetic fixtures under work/pick-preview; these are never part of dist and do not alter the empty content list.
