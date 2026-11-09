@@ -13,11 +13,11 @@ for (const [, references] of html.matchAll(/aria-(?:labelledby|describedby|contr
 assert.match(html, /<nav id="navigation" aria-label="Main navigation">/, 'Navigation is available without JavaScript');
 assert.match(html, /<button class="menu"[^>]* hidden>/, 'Unenhanced page must not show a nonfunctional menu toggle');
 assert.equal((html.match(/<details>/g) || []).length, 3, 'FAQs retain native disclosure controls');
-assert.equal((html.match(/<summary>/g) || []).length, 3);
+assert.equal((html.match(/<summary>/g) || []).length, 7);
 assert.equal((html.match(/data-sport="/g) || []).length, 6, 'Public sports hub retains six sports');
 assert.equal((html.match(/<h1\b/g) || []).length, 1);
-assert.equal((html.match(/<dt>/g) || []).length, 3, 'Each result metric has one term');
-assert.equal((html.match(/<dd>/g) || []).length, 3, 'Each result metric has one description');
+assert.equal((html.match(/class="record-panel"/g) || []).length, 4, 'Four historical category panels');
+assert.equal((html.match(/class="record-chart"/g) || []).length, 4, 'Four historical charts');
 assert(!/<dt class="note">/.test(html), 'Metric status belongs in the description');
 assert.match(html, /<main id="main" tabindex="-1">/, 'Skip destination can receive focus');
 for (const id of ['picks', 'results', 'sports', 'premium', 'about']) {
@@ -25,7 +25,7 @@ for (const id of ['picks', 'results', 'sports', 'premium', 'about']) {
 }
 assert.match(html, /id="sport-detail" role="region" aria-labelledby="sport-title"/);
 assert.match(html, /No free picks published yet/);
-assert.match(html, /PUBLIC PREVIEW \/ NO LIVE DATA/, 'Preview status must be visible in the hero');
+assert.match(html, /PUBLIC PICKS \/ HISTORICAL RESULTS/, 'Preview status must be visible in the hero');
 assert.match(html, /Illustration only · not performance data/, 'Concept artwork must not imply a performance record');
 
 const whopUrls = [
@@ -54,3 +54,4 @@ assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(|\.sendBeacon\s*\(
 assert(!/<(?:iframe|form)\b/i.test(html), 'No embedded services or collection forms in this preview');
 execFileSync(process.execPath, ['--check', 'app.js']);
 console.log(`Passed: ${ids.length} unique anchors, local assets, honest content states, no external integration, JavaScript syntax.`);
+
