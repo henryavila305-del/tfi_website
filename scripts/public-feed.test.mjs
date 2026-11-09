@@ -48,3 +48,10 @@ test('browser feed renders text safely, clears stale rows on failure and skips h
   document.hidden=false;fail=true;await button.click();assert.equal(list.children.length,0);assert(status.textContent.includes('unavailable'));
   assert.equal(button.disabled,false);assert.equal(input.disabled,false);
 });
+test('read-only live public source smoke check (one CI matrix job)',{skip:process.env.CI!=='true'||process.platform!=='linux'||Number(process.versions.node.split('.')[0])!==24},async()=>{
+  // Public GETs only; no grader request, auth/session, writes, raw rows or keys in logs.
+  const data=await readPublicFeed('2026-11-03');
+  assert(data.items.length>0,'Expected existing dated public feed rows');
+  assert(data.items.every(p=>['Top 3 #1','Top 3 #2','Top 3 #3'].includes(p.category)));
+  console.log(`Read-only live source verified: ${data.items.length} sanitized public rows. No grading or database writes.`);
+});
