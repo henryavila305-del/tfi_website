@@ -43,7 +43,7 @@ assert.match(
   'Official TFI Premium membership link must be enabled and secure'
 );
 const externalUrls = [...html.matchAll(/https:\/\/[^\s"'<>]+/g)].map(match => match[0]);
-assert.deepEqual(externalUrls, whopUrls, 'Only the two approved Whop destinations are allowed');
+assert.deepEqual(externalUrls, [...whopUrls, 'https://x.com/thefavindex'], 'Only approved membership and public-contact destinations are allowed');
 
 
 assert(!/supabase|api[_-]?key|service_role|password/i.test(html), 'No private integration configuration');

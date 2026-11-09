@@ -48,3 +48,5 @@ Whop plan names and displayed prices are confirmed: All Access $35.99/month and 
 - vercel.json has git.deploymentEnabled=false on this branch. This blocks Git-triggered Vercel deployment for this branch; it does not remove an already hosted version or prove the state of every external hosting setting.
 - The workflow validates only. No merge, DNS, production publishing, account or billing action is included.
 - Review and record the owner decisions in LAUNCH_INPUTS.md before implementing a future change that lifts either hold. Structural publicApproved fields do not independently establish authorization.
+
+The owner selected Twitter/X @thefavindex as the website's public contact (PUBLIC-CONTACT-01), using https://x.com/thefavindex. No public email address was supplied. A plain footer link is prepared in this draft; no social embed, email address or outbound message is added. Legal/privacy and entity details remain separate inputs. Publication and deployment stay blocked.

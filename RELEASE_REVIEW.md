@@ -27,3 +27,5 @@ The Whop URLs are already implemented; do not describe them as absent. The confi
 vercel.json disables Git-triggered Vercel deployment on this branch. Existing hosted versions are unaffected. GitHub Actions validates only and does not publish.
 
 No merge, production deployment, domain connection, database, credential, private pick or billing change is authorized by this review packet.
+
+The owner selected Twitter/X @thefavindex as the website's public contact (PUBLIC-CONTACT-01), using https://x.com/thefavindex. No public email address was supplied. A plain footer link is prepared in this draft; no social embed, email address or outbound message is added. Legal/privacy and entity details remain separate inputs. Publication and deployment stay blocked.
