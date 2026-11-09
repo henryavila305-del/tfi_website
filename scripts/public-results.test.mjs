@@ -9,6 +9,7 @@ test('dated owner-reported card retains unknown stakes and publication times',()
   assert.equal(source.cards.length,1);
   const card=source.cards[0];assert.equal(card.eventDate,'2026-11-08');assert.equal(card.timezone,'America/New_York');assert.equal(card.publishedAt,null);
   assert.deepEqual(card.selections.map(p=>p.result),['Win','Win','Win']);
+  assert.deepEqual(card.selections.map(p=>p.score),['DEN 26-21 CAR','NYG 19-11 PHI','BOS 4-1 FLA']);
   assert(card.selections.every(p=>p.stakeUnits===null&&p.audience==='public'));
   const html=renderResults(source);assert(html.includes('3 wins · 0 losses · 0 pending'));
   assert(html.includes('November 8, 2026 · Eastern Time'));
