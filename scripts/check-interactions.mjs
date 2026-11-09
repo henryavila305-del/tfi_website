@@ -61,6 +61,6 @@ for (const sport of sports) {
   handlers.get(`sport-${sport.dataset.sport}:click`)();
   assert.equal(document.activeElement, detail);
   assert.equal(nodes.get('#sport-title').textContent, `${sport.dataset.sport} · Public board`);
-  assert(nodes.get('#sport-description').textContent.startsWith(`No ${sport.dataset.sport} free picks or verified results`));
+  assert(nodes.get('#sport-description').textContent.startsWith(`The ${sport.dataset.sport} live feed is not connected.`));
 }
 console.log('Passed simulated menu, Escape, breakpoint focus, section navigation, and all six sport status transitions.');

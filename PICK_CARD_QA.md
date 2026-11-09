@@ -17,6 +17,28 @@ Reproduce with node scripts/preview-public-picks.mjs and open work/pick-preview/
 
 ## Limits and next checks
 
-A narrow container is not an actual 320px device viewport. Physical phones, Firefox, Safari, screen-reader output, full forced-colors traversal, and full-page integration with populated cards remain unverified. These observations use isolated fixtures rather than the complete website.
+A narrow container is not an actual 320px device viewport. Physical phones, Firefox, Safari, screen-reader output, full forced-colors traversal, remain unverified. The earlier observations above use isolated fixtures; see the full-page review below for later evidence.
 
 Publication stays blocked for nonempty content. Builds enforce that hold before writing output; vercel.json continues to disable Git-triggered deployment. Run all Node checks and build verification against the exact reviewed commit.
+
+## Full-page integration review — November 9, 2026
+
+The preview generator now also creates full.html and full-no-script.html from the actual website template, with the real local assets and a synthetic-review banner. Production content remains [].
+
+Integration fixes:
+- The public-board status has a separate validated marker slot. Populated rendering shows its entry count; empty rendering retains AWAITING PUBLICATION. Missing, duplicate, reversed or overlapping slots fail rather than corrupting the page.
+- The initial sports panel and sport activation copy describe the disconnected feed and point readers to the board/history instead of incorrectly asserting that no picks exist.
+- FAQ publication wording describes approved entries without assuming the board is empty.
+
+Observed in the existing 960 by 1080 Edge window:
+- Full-page cards showed the five-entry status and readable long selection/metadata/reasoning at 100% zoom. The accessibility tree exposed five named synthetic articles alongside the historical section.
+- Navigating to Results reached the historical section. Selecting Premium / Max Bet using the category control and arrow/Enter keys updated the visible chart and 60–29 / 67.42% record.
+- After reloading the regenerated fixture, the initial sports message matched the corrected source. Activating NBA showed the updated NBA-specific message.
+- The full script-omitted fixture showed all five cards and the correct board status. At 200% zoom, targeted inspection of the board heading, count and first card showed stacked metadata and wrapped long selection text. Normal 100% zoom was restored.
+- The first native FAQ in the script-omitted full page expanded and displayed its answer. FAQ publication copy was subsequently simplified; structure and behavior are unchanged.
+
+Browser control initially stopped on URL-confidence verification in the preceding turn. This turn reconnected through normal app discovery to the already-open local fixture with a verified URL. No workaround or policy bypass was used.
+
+Limits: this is targeted full-page integration evidence, not complete end-to-end accessibility certification or a full viewport matrix. Physical phones, Firefox/Safari, screen-reader output, full forced-colors traversal and the complete full-page 400% pass remain unverified.
+
+Automated preview checks now verify full-page IDs/ARIA/anchors/local assets, five synthetic cards, unchanged historical markup, absence of scripts in the fallback and unchanged empty production content.

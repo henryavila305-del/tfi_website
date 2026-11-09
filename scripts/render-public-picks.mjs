@@ -10,6 +10,11 @@ export function renderPublicPicks(template, picks) {
   const from = template.indexOf(start) + start.length;
   const to = template.indexOf(end);
   if (to < from) throw new Error('Invalid public-picks slot order');
+  const statusStart = '<!-- public-picks:status -->', statusEnd = '<!-- public-picks:status-end -->';
+  if (template.split(statusStart).length !== 2 || template.split(statusEnd).length !== 2
+    || template.indexOf(statusStart) > template.indexOf(statusEnd)) throw new Error('Exactly one ordered public-picks status slot required');
+  const statusFromTemplate = template.indexOf(statusStart), statusToTemplate = template.indexOf(statusEnd) + statusEnd.length;
+  if (!(statusToTemplate <= template.indexOf(start) || statusFromTemplate >= to + end.length)) throw new Error('Public-picks slots must not overlap');
   if (picks.length === 0) return template;
   const cards = picks.map(pick => {
     const text = key => escapeHtml(pick[key]);
@@ -20,5 +25,8 @@ export function renderPublicPicks(template, picks) {
       + '<dt>Event (UTC)</dt><dd><time datetime="' + text('eventAt') + '">' + text('eventAt') + '</time></dd>'
       + '<dt>Result</dt><dd>' + text('result') + '</dd></dl><p>' + text('reasoning') + '</p></article>';
   }).join('\n');
-  return template.slice(0, from) + '\n' + cards + '\n' + template.slice(to);
+  const populated = template.slice(0, from) + '\n' + cards + '\n' + template.slice(to);
+  const statusFrom = populated.indexOf(statusStart) + statusStart.length;
+  const statusTo = populated.indexOf(statusEnd);
+  return populated.slice(0, statusFrom) + 'PUBLIC PICKS · ' + picks.length + populated.slice(statusTo);
 }

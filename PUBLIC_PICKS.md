@@ -15,3 +15,5 @@ Run npm run check and npm run build:check. The static output remains the existin
 ## Card styling and local review
 
 Cards use named article headings, explicit result text, wrapping metadata and reasoning, compact-card stacking, and system-color rules. See PICK_CARD_QA.md for the bounded Edge review and remaining checks. Run node scripts/preview-public-picks.mjs to generate ignored, script-free synthetic fixtures under work/pick-preview; these are never part of dist and do not alter the empty content list.
+
+The preview generator also creates full.html and full-no-script.html using the actual website and local assets. Populated rendering updates the board status count; the empty content still preserves the publication hold. npm run check includes full-page preview checks for IDs, ARIA, anchors, assets, historical isolation and the script-free fallback. See PICK_CARD_QA.md for targeted integration observations.
