@@ -25,3 +25,5 @@ Cards use named article headings, explicit result text, wrapping metadata and re
 The preview generator also creates full.html and full-no-script.html using the actual website and local assets. Populated rendering updates the board status count; the empty content still preserves the publication hold. npm run check includes full-page preview checks for IDs, ARIA, anchors, assets, historical isolation and the script-free fallback. See PICK_CARD_QA.md for targeted integration observations.
 
 Current review status and owner decisions are consolidated in [REVIEW_GUIDE.md](REVIEW_GUIDE.md) and [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md).
+
+Public performance reporting is limited to win/loss records for now; stake amounts, net units, profit and ROI remain withheld (PUBLIC-PICK-METRICS-01). This retains the approved win-percentage calculation and transparent push/void/pending statuses; recorded pick odds and membership prices are not profit claims. This policy does not authorize publication or deployment, and adds no real entries or historical changes.
