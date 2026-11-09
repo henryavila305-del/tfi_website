@@ -1,30 +1,19 @@
-# The Favorite Index — Phase 1
+# The Favorite Index
 
-Standalone public website preview. Responsive black, charcoal, and electric-green design with accessible navigation, free picks, results, sports exploration, Premium entry, and methodology.
+Standalone static public website with responsive navigation, an empty free-picks board, six-sport public status panel, two Whop membership links, and four imported historical aggregate records. Historical selections remain private; net units and ROI are withheld.
 
 ## Local review
 
-Requires Node.js 22 or newer. Run `npm run check`, `npm run build`, then `npm run dev`. Open http://127.0.0.1:4173. Static build output is in `dist/` (ignored by Git). No dependencies to install.
+Requires Node 22 or newer, with no dependencies to install. Run npm run check, npm run build:check, then npm run dev. Open http://127.0.0.1:4173. Build verification checks the exact five public assets twice against source. Direct builds also refuse unexpected output files; move any unreviewed files out of dist before rebuilding. Negative build tests run in an isolated temporary fixture.
 
-`npm run build:check` builds twice and verifies that output contains exactly the four public assets, matching source byte for byte. If npm is unavailable, run `node scripts/check.mjs`, `node scripts/check-interactions.mjs`, `node scripts/check-build.mjs`, and `node scripts/serve.mjs` directly.
+## Public picks preparation
 
-## Automated validation
+See PUBLIC_PICKS.md for the strict public-entry contract and remaining owner decisions. content/public-picks.json remains empty and checks enforce that hold. A static renderer is prepared and tested with synthetic entries; no feed, database, collection form, analytics or private data integration is added.
 
-The PR validation workflow runs source/content checks, simulated focus/menu transitions, repeatable build checks, and whitespace validation on Node 22/24 on Linux and Windows. It requests read-only repository contents and disables persisted checkout credentials. It has no deployment, publishing, or domain steps. These checks do not replace the remaining browser/device and screen-reader review in QA.md.
+## Review PR #5
 
-## Content boundaries
+Start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md) for the consolidated checklist: completed safeguards, confirmed decisions, remaining blockers and bounded validation evidence. [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md) preserves owner approval records; [RELEASE_REVIEW.md](RELEASE_REVIEW.md) gives the short release status.
 
-- No fabricated selections, statistics, odds, or returns. Picks and results are explicitly empty.
-- Premium entry stays disabled until a verified official TFI Whop URL is supplied. No private selections or membership data.
-- Sports links update a public-status panel; these are not live data pages.
-- Methodology describes publication requirements, not an operational model or verified feed.
-- No analytics, cookies, forms, payments, remote fonts, APIs, or secrets.
-- Navigation and FAQ work without JavaScript; mobile menu and sport panel are progressive enhancements.
+Synthetic withdrawals, visible corrections and prior-snapshot retention checks are prepared. Real public content stays []; original odds remain recorded, approval references are not rendered and no private selections ship. Trusted approval/source capture, baseline storage and future publication-path integration remain gates.
 
-## Release hold
-
-See RELEASE_REVIEW.md for the content review, verified engineering evidence, and remaining launch gates. See QA.md for exact browser coverage and limitations.
-
-Draft PR only. Do not merge, deploy, connect thefavindex.com, or modify TFI Live Tracker, Supabase, picks, or credentials. No deployment workflow is included.
-
-Before a separately authorized launch: approve brand and content, supply the official Whop URL, approve grading rules and public publication process, complete browser/accessibility review, and review applicable legal/privacy copy. Domain and hosting decisions are outside Phase 1.
+PR #5 is an open draft. No merge, publication or deployment is authorized. vercel.json disables Git-triggered deployment for this branch; existing hosted versions are unaffected. GitHub Actions validates only. No tracker, database, credentials, domain/DNS or hosting changes are included.

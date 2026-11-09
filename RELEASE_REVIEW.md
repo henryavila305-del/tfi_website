@@ -1,36 +1,13 @@
-# Phase 1 release-readiness review
+# Release review status
 
-Status: **draft review only; launch remains on hold**.
+PR #5 remains an open, unmerged draft. Publication and deployment are blocked.
 
-## Public content review
+Use [REVIEW_GUIDE.md](REVIEW_GUIDE.md) as the single completed-safeguard and remaining-blocker checklist. [LAUNCH_INPUTS.md](LAUNCH_INPUTS.md) preserves the version-specific owner approval records and exact missing inputs. [PUBLIC_PICKS.md](PUBLIC_PICKS.md) defines the current contract and retention limitations.
 
-- Hero now identifies the site as a public preview with no live data. Intro describes the planned results record without suggesting results are currently available.
-- The rising-line hero artwork is explicitly labeled as an illustration, not performance data. No odds, results, returns, testimonials, or selections were invented.
-- Free picks, sports status, and results all disclose that no public selections/results have been published. Result metrics use dashes and descriptions, not zeroes that could imply a graded record.
-- Premium calls to action reach the public membership section. Whop checkout remains disabled; no destination, prices, terms, or membership capabilities were guessed.
-- About/methodology describes the proposed publication and grading requirements. It does not claim an active model or verified results service.
-- Footer and FAQ disclose uncertainty and the preview's boundaries. No contact, collection, payment, analytics, or private-content flow was added.
+The implemented slice includes static cards, synthetic withdrawals/corrections, preserved original odds, corrected-result statistics, prior-snapshot retention and distinct-file comparison guards. Real production content stays empty; direct builds reject nonempty picks and output exactly five allowlisted assets. The validation workflow has no publishing step.
 
-## Engineering evidence
+Current implementation evidence: head 0a094ba24dc72ce09c678ba48a8a718af53399f5 passed all four Node 22/24 Linux/Windows jobs in [run 42676409161](https://github.com/henryavila305-del/tfi_website/actions/runs/42676409161). Later heads require their own checks. Browser evidence is stage-specific; new withdrawal/correction browser checks remain unfinished.
 
-- Source checks cover local links/assets, unique IDs, ARIA targets, native FAQ/no-script markup, empty-state copy and disconnected-preview boundaries.
-- Simulated tests cover all six sports, menu/Escape, section focus, both responsive focus transitions, ordinary Tab/non-link behavior, and preservation of unrelated content focus.
-- Build verification checks two consecutive builds for an exact four-file output allowlist and byte-for-byte agreement with source.
-- GitHub validation succeeded on Node 22 and 24 on Linux and Windows for commit `f3e2f061cb4deb4469825953d759108c6de9ab2a`: https://github.com/henryavila305-del/tfi_website/actions/runs/42508169355 . A newer commit must receive its own checks; prior success is not evidence for changed source.
-- The workflow requests read-only contents, does not persist checkout credentials, and has no deployment or publishing steps.
+Real-pick publication still requires trustworthy approval/publication/source evidence, a trusted retained baseline and event-based withdrawal lifecycle. Website release still requires legal/privacy approval, current accessibility/browser and destination review, hosting/DNS details and separate exact-commit release authorization. Selected plans, branding, rules, contact, primary domain, provider and project URL are already recorded.
 
-## Remaining gates
-
-| Gate | Current evidence / required next step |
-| --- | --- |
-| Brand and public copy | Owner review required before any launch; Phase 1 copy is a review proposal. |
-| Whop destination | Official TFI URL has not been supplied and verified. Keep checkout disabled. |
-| Public picks/results | No connection authorized. Keep empty until the owner approves public publication and grading rules. |
-| Browser accessibility | Edge header-to-footer traversal at 200%/400%, keyboard flows, script-omitted fallback navigation/FAQ, and targeted forced-colors emulation passed. One sports-grid alignment issue was fixed and rechecked at 400%. Original-page JavaScript-disabled testing, full contrast coverage, other viewport/zoom combinations, and screen-reader review remain incomplete. See QA.md. |
-| Cross-engine/device coverage | Firefox/Safari and physical phones remain unverified. A Chrome launch timed out, and later browser control stopped on URL verification. No bypass is authorized. |
-| Launch-specific review | Applicable legal/privacy copy and final public data/links require review before launch. This preview is not represented as launch-ready. |
-| Merge, hosting, domain | No merge, deployment, hosting registration, or domain connection authorized. |
-
-## Explicit boundaries
-
-All development remains in `tfi_website` on `design/tfi-website-phase1` and draft PR #1. TFI Live Tracker, Supabase, live/private picks, credentials, and the purchased domain are outside this work.
+This packet authorizes no merge, publication, deployment, domain/DNS, account, credential, private-data or billing change. Existing hosted versions are unaffected.

@@ -33,7 +33,7 @@ document.querySelectorAll('[data-sport]').forEach(link => {
   link.addEventListener('click', () => {
     const sport = link.dataset.sport;
     document.querySelector('#sport-title').textContent = `${sport} · Public board`;
-    document.querySelector('#sport-description').textContent = `No ${sport} free picks or verified results have been published. This preview has no connected live feed. Check the public board for future approved releases.`;
+    document.querySelector('#sport-description').textContent = `The ${sport} live feed is not connected. Check the public board for approved free picks and the historical record for imported results.`;
     document.querySelector('#sport-detail').focus({ preventScroll: true });
   });
 });
