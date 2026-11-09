@@ -56,7 +56,7 @@ const correctionHtml = renderPublicPicks(template,[corrected]);
 assert(correctionHtml.includes('<dt>American odds (original)</dt><dd>+110</dd>'));
 assert(correctionHtml.includes('<dt>Result</dt><dd>loss</dd><dt>Originally recorded result</dt><dd>pending</dd>'));
 assert(correctionHtml.includes('<h4>Correction history</h4><ol>'));
-assert(correctionHtml.includes('Recorded odds: 110 → 105'));
+assert(correctionHtml.includes('Recorded odds: +110 → +105'));
 assert(correctionHtml.includes('Result: pending → loss'));
 assert(correctionHtml.includes('Synthetic A &amp; B &quot;recording error&quot;'));
 assert(correctionHtml.includes('<time datetime="'+correction.correctedAt+'">'+correction.correctedAt+'</time>'));
@@ -65,3 +65,23 @@ assert(correctionHtml.includes('Public record: 0 wins, 1 losses. Win percentage:
 assert.equal(JSON.stringify(corrected),before,'Rendering must not overwrite original records');
 assert(!renderPublicPicks(template,[sample]).includes('Correction history'));
 console.log('Passed visible escaped correction history, original odds/result, hidden approvals and effective grade rendering.');
+
+const crossing = {...sample,odds:-110,corrections:[
+  {...correction,from:-110,to:105},
+  {...correction,field:'result',from:'pending',to:'win',correctedAt:'2026-11-01T14:00:00.000Z'},
+  {...correction,from:105,to:-115,correctedAt:'2026-11-01T14:30:00.000Z'},
+  {...correction,field:'result',from:'win',to:'push',correctedAt:'2026-11-01T15:00:00.000Z'}
+]};
+const frozenSnapshot = JSON.stringify(crossing);
+for(const item of crossing.corrections) Object.freeze(item);
+Object.freeze(crossing.corrections); Object.freeze(crossing);
+const crossingHtml = renderPublicPicks(template,[crossing]);
+assert(crossingHtml.includes('<dt>American odds (original)</dt><dd>-110</dd>'));
+assert(crossingHtml.includes('Recorded odds: -110 → +105'));
+assert(crossingHtml.includes('Recorded odds: +105 → -115'));
+assert(crossingHtml.indexOf('Recorded odds: -110 → +105') < crossingHtml.indexOf('Result: pending → win'));
+assert(crossingHtml.indexOf('Result: pending → win') < crossingHtml.indexOf('Recorded odds: +105 → -115'));
+assert(crossingHtml.includes('<dt>Result</dt><dd>push</dd>'));
+assert(crossingHtml.includes('Win percentage: Not available (no wins or losses)'));
+assert.equal(JSON.stringify(crossing),frozenSnapshot);
+console.log('Passed signed American-odds corrections, interleaved rendered history and frozen-source rendering.');

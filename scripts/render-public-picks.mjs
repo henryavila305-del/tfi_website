@@ -4,6 +4,7 @@ const end = '<!-- public-picks:end -->';
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 }
+function americanOdds(value) { return value > 0 ? '+' + value : String(value); }
 export function renderPublicPicks(template, picks) {
   validatePublicPicks(picks);
   if (template.split(start).length !== 2 || template.split(end).length !== 2) throw new Error('Exactly one public-picks slot required');
@@ -23,9 +24,9 @@ export function renderPublicPicks(template, picks) {
   }
   const cards = picks.map(pick => {
     const text = key => escapeHtml(pick[key]);
-    const odds = pick.odds > 0 ? '+' + pick.odds : String(pick.odds);
+    const odds = americanOdds(pick.odds);
     const history = pick.corrections?.length ? '<h4>Correction history</h4><ol>' + pick.corrections.map(correction =>
-      '<li><p>' + (correction.field === 'odds' ? 'Recorded odds' : 'Result') + ': ' + escapeHtml(correction.from) + ' → ' + escapeHtml(correction.to)
+      '<li><p>' + (correction.field === 'odds' ? 'Recorded odds' : 'Result') + ': ' + escapeHtml(correction.field === 'odds' ? americanOdds(correction.from) : correction.from) + ' → ' + escapeHtml(correction.field === 'odds' ? americanOdds(correction.to) : correction.to)
       + '. Corrected (UTC): <time datetime="' + escapeHtml(correction.correctedAt) + '">' + escapeHtml(correction.correctedAt) + '</time>. Reason: ' + escapeHtml(correction.reason) + '</p></li>'
     ).join('') + '</ol>' : '';
     const originalResult = pick.corrections?.some(correction => correction.field === 'result') ? '<dt>Originally recorded result</dt><dd>' + text('result') + '</dd>' : '';

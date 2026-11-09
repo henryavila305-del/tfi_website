@@ -75,3 +75,20 @@ for(const patch of [{to:'withdrawn'},{to:'unknown'},{correctedAt:'2026-11-01T12:
 assert.throws(()=>validatePublicPicks([{...withdrawn,corrections:[{...grade,from:'withdrawn'}]}]));
 assert.equal(summarizePublicPicks([{...withdrawn,corrections:[correction]}]).winPercentage,null);
 console.log('Passed synthetic correction chains, approval, canonical chronology, original-value preservation and corrected statistics.');
+
+const interleaved = {...sample, corrections:[
+  {...correction},
+  {...grade},
+  {...correction,from:-105,to:105,correctedAt:'2026-11-01T14:30:00.000Z'},
+  {...grade,from:'win',to:'push',correctedAt:'2026-11-01T15:00:00.000Z'}
+]};
+const interleavedSnapshot = JSON.stringify(interleaved);
+for(const item of interleaved.corrections) Object.freeze(item);
+Object.freeze(interleaved.corrections); Object.freeze(interleaved);
+assert.deepEqual(summarizePublicPicks([interleaved]), {wins:0,losses:0,winPercentage:null});
+assert.equal(JSON.stringify(interleaved),interleavedSnapshot,'Independent odds/grade chains must not mutate source');
+assert.throws(()=>validatePublicPicks([{...interleaved,odds:-115}]), /value chain/);
+assert.throws(()=>validatePublicPicks([{...interleaved,result:'loss'}]), /value chain/);
+assert.throws(()=>validatePublicPicks([{...interleaved,corrections:[interleaved.corrections[0],interleaved.corrections[2],interleaved.corrections[1]]}]), /ordered/);
+assert.equal(summarizePublicPicks([graded,{...sample,id:'independent-loss',result:'loss'}]).winPercentage,50);
+console.log('Passed interleaved correction chains, frozen-source preservation, inconsistent base-value rejection and cross-pick statistics.');
