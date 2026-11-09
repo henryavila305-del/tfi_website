@@ -2,11 +2,12 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { renderPage } from './public-picks.mjs';
 import feed from '../api/public-feed.js';
+import record from '../api/public-record.js';
 const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
-const files = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/favicon.svg': 'favicon.svg', '/records.js': 'records.js', '/feed.js': 'feed.js' };
+const files = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/favicon.svg': 'favicon.svg', '/records.js': 'records.js', '/feed.js': 'feed.js', '/daily-record.js':'daily-record.js' };
 http.createServer(async (req, res) => {
-  if(new URL(req.url,'http://localhost').pathname==='/api/public-feed'){
-    res.status=code=>{res.statusCode=code;return res;};res.json=data=>{res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(data));};return feed(req,res);
+  if(new URL(req.url,'http://localhost').pathname==='/api/public-feed' || new URL(req.url,'http://localhost').pathname==='/api/public-record'){
+    res.status=code=>{res.statusCode=code;return res;};res.json=data=>{res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(data));};return new URL(req.url,'http://localhost').pathname==='/api/public-record'?record(req,res):feed(req,res);
   }
   const file = files[new URL(req.url, 'http://localhost').pathname];
   if (!file) { res.writeHead(404); res.end('Not found'); return; }

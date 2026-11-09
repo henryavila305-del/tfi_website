@@ -6,7 +6,7 @@ import { renderPage } from './public-picks.mjs';
 const reviewedPage=renderPage(await readFile('index.html','utf8'),JSON.parse(await readFile('content/public-picks.json','utf8')),JSON.parse(await readFile('content/public-results.json','utf8')));
 
 execFileSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
-const expected = ['app.js', 'favicon.svg', 'feed.js', 'index.html', 'records.js', 'styles.css'];
+const expected = ['app.js', 'daily-record.js', 'favicon.svg', 'feed.js', 'index.html', 'records.js', 'styles.css'];
 assert.deepEqual((await readdir('dist')).sort(), expected, 'Output must contain only the public static assets');
 for (const asset of expected) {
   assert.deepEqual(await readFile(`dist/${asset}`), asset==='index.html'?Buffer.from(reviewedPage):await readFile(asset), `Built ${asset} must match the reviewed source`);
