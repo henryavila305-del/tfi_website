@@ -20,4 +20,4 @@ PR #1 and historical-record PR #3 are merged. HISTORY_REVIEW.md describes the im
 
 The validation workflow runs checks on Node 22/24 and Linux/Windows, with read-only repository permissions and no publishing steps. vercel.json disables automatic Git-triggered Vercel deployment on this branch; this does not remove an existing hosted version.
 
-Before launch, confirm current Whop destinations/prices and approval evidence, approve brand/public copy and legal/privacy text, complete current-page accessibility/browser review, and decide hosting/domain separately. Public pick publication additionally needs approved release and grading rules. Do not connect private trackers, Supabase, credentials, or the purchased domain.
+Whop plan names and displayed prices are owner-confirmed; see LAUNCH_INPUTS.md. Before launch, complete final destination/link review, approve brand/public copy and legal/privacy text, complete current-page accessibility/browser review, and decide hosting/domain separately. Public pick publication additionally needs approved release and grading rules. Do not connect private trackers, Supabase, credentials, or the purchased domain.
