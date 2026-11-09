@@ -46,3 +46,7 @@ Automated preview checks now verify full-page IDs/ARIA/anchors/local assets, fiv
 ## Later forced-colors and keyboard evidence
 
 See KEYBOARD_CONTRAST_QA.md for the targeted full-fixture forced-colors pass, system-color SVG fix, keyboard menu/history/table checks and exact remaining limits. Earlier statements above describe the evidence available at those stages.
+
+## Later 400% section review
+
+See ZOOM_QA.md for the completed section-by-section 400% review in the documented Edge window, the narrow sports-grid fix, membership action spacing, and remaining limits. Earlier 400% limitations above describe the evidence available at those stages.

@@ -45,3 +45,8 @@
 
 /* SVG chart paints also follow the selected high-contrast palette. */
 @media(forced-colors:active){.record-chart text{fill:CanvasText}.record-chart path{stroke:GrayText}.record-chart polyline{stroke:LinkText}}
+
+/* Keep college labels readable at very narrow effective zoom widths. */
+@media(max-width:320px){.sports-grid{grid-template-columns:minmax(0,1fr)}}
+
+.premium-entry a.button + a.button{margin-top:12px}
