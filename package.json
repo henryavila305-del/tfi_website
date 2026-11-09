@@ -7,7 +7,7 @@
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "build:check": "node scripts/check-build.mjs",
-    "check": "node scripts/check.mjs && node scripts/check-interactions.mjs && node scripts/check-records.mjs && node scripts/check-public-picks.mjs"
+    "check": "node scripts/check.mjs && node scripts/check-interactions.mjs && node scripts/check-records.mjs && node scripts/check-public-picks.mjs && node scripts/check-render-public-picks.mjs"
   },
   "engines": {
     "node": ">=22"

@@ -8,7 +8,7 @@ Requires Node 22 or newer, with no dependencies to install. Run npm run check, n
 
 ## Public picks preparation
 
-See PUBLIC_PICKS.md for the strict public-entry contract and remaining owner decisions. content/public-picks.json remains empty and checks enforce that hold. No feed, renderer, database, collection form, analytics or private data integration is added.
+See PUBLIC_PICKS.md for the strict public-entry contract and remaining owner decisions. content/public-picks.json remains empty and checks enforce that hold. A static renderer is prepared and tested with synthetic entries; no feed, database, collection form, analytics or private data integration is added.
 
 ## Current evidence and release hold
 

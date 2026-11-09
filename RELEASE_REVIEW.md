@@ -6,7 +6,7 @@ Launch remains on hold. PR #1 and historical-record PR #3 have merged; earlier d
 
 Responsive navigation, six sport status links, native FAQ, an empty free-picks board, two Whop membership links, and four aggregate historical charts/tables. See HISTORY_REVIEW.md for scope, missing history, overlap and self-reported data disclosures. No live feed or private selections are present.
 
-The public-pick contract is validated, but a nonempty content list is intentionally rejected until publication is separately approved. No pick renderer or data connection is included. See PUBLIC_PICKS.md.
+The public-pick contract is validated, but a nonempty content list is intentionally rejected until publication is separately approved. The build includes a static renderer tested with synthetic entries. The empty publication hold remains enforced before output is written; no data connection is included. See PUBLIC_PICKS.md.
 
 Build output is exactly five existing public assets. No content fixtures, private source or approval documents ship. Vercel Git deployments are disabled by vercel.json on this branch. Existing hosted versions are unaffected.
 
