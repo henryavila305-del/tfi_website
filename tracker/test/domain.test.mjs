@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { oddsToDecimal, summarize, validatePick } from '../domain.mjs';
+import { oddsToDecimal, summarize, validatePick, filterPicks } from '../domain.mjs';
 test('American odds convert both favorites and underdogs',()=>{
   assert.equal(oddsToDecimal(150,'american'),2.5);
   assert.equal(oddsToDecimal(-200,'american'),1.5);
@@ -18,4 +18,10 @@ test('public entry cannot be late and units must be positive finite cents',()=>{
   for(const stake of [0,-1,NaN,Infinity,.001])assert.throws(()=>validatePick({...input,stake},now));
   assert.throws(()=>validatePick({...input,startsAt:new Date(now).toISOString()},now));
   assert.equal(validatePick({...input,visibility:'private',startsAt:new Date(now).toISOString()},now).late,true);
+});
+test('sport and UTC event-date filters apply inclusive boundaries without mutating records',()=>{
+  const picks=[{sport:'NBA',startsAt:'2026-11-01T00:00:00Z'},{sport:'NFL',startsAt:'2026-11-02T23:59:59Z'},{sport:'NBA',startsAt:'2026-11-03T00:00:00Z'}];
+  assert.equal(filterPicks(picks,{from:'2026-11-01',to:'2026-11-02'}).length,2);
+  assert.equal(filterPicks(picks,{sport:'NBA',from:'2026-11-02'}).length,1);
+  assert.throws(()=>filterPicks(picks,{from:'2026-02-30'}),{status:400});assert.throws(()=>filterPicks(picks,{from:'2026-11-03',to:'2026-11-01'}),{status:400});assert.equal(picks.length,3);
 });

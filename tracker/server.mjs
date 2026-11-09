@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { openStore } from './store.mjs';
 import { fail } from './domain.mjs';
+import { verifyWhopEvent } from './billing.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const publicFiles=new Map([
   ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/app.js','app.js'],['/favicon.svg','favicon.svg'],
@@ -11,13 +12,14 @@ const publicFiles=new Map([
 ]);
 const types={html:'text/html',css:'text/css',mjs:'text/javascript',js:'text/javascript',svg:'image/svg+xml'};
 const tokenFrom=req=>/\btfi_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie||'')?.[1];
-async function body(req) {
+async function rawBody(req,limit=16384) {
   if(!req.headers['content-type']?.startsWith('application/json'))fail(415,'JSON required');
   let size=0,parts=[];
-  for await(const chunk of req){size+=chunk.length;if(size>16384)fail(413,'Request too large');parts.push(chunk);}
-  try{const parsed=JSON.parse(Buffer.concat(parts).toString());if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))fail(400,'JSON object required');return parsed;}catch{fail(400,'Invalid JSON object');}
+  for await(const chunk of req){size+=chunk.length;if(size>limit)fail(413,'Request too large');parts.push(chunk);}
+  return Buffer.concat(parts).toString('utf8');
 }
-export function createTrackerServer(store) {
+async function body(req){try{const parsed=JSON.parse(await rawBody(req));if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))fail(400,'JSON object required');return parsed;}catch(e){if(e.status)throw e;fail(400,'Invalid JSON object');}}
+export function createTrackerServer(store,{billing=null}={}) {
   const attempts=new Map();
   return http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');
@@ -31,6 +33,12 @@ export function createTrackerServer(store) {
       if(req.headers.host!==expectedHost)fail(403,'Local preview only: use the printed 127.0.0.1 address');
       const url=new URL(req.url,`http://${expectedHost}`),path=url.pathname;
       if(!['GET','POST'].includes(req.method))fail(405,'Method not allowed');
+      if(path==='/api/webhooks/whop'&&req.method==='POST'){
+        if(!billing)fail(503,'Billing receiver is not configured');
+        for(const name of ['webhook-id','webhook-timestamp','webhook-signature'])if(req.rawHeaders.filter((v,i)=>i%2===0&&v.toLowerCase()===name).length!==1)fail(400,'Duplicate or missing webhook headers');
+        const event=verifyWhopEvent(await rawBody(req,65536),req.headers,billing);
+        return send(200,store.enqueueBilling(event));
+      }
       if(req.method==='POST'&&req.headers.origin!==`http://${expectedHost}`)fail(403,'Same-origin request required');
       if(path==='/api/health'&&req.method==='GET')return send(200,{mode:'isolated-local-beta',payments:false,liveFeed:false});
       if(req.method==='POST'&&['/api/register','/api/login'].includes(path)){
@@ -45,6 +53,7 @@ export function createTrackerServer(store) {
       if(path.startsWith('/api/')){
         const token=tokenFrom(req),user=store.authenticate(token);
         if(path==='/api/dashboard'&&req.method==='GET')return send(200,store.dashboard(user.id));
+        if(path==='/api/export'&&req.method==='GET'){res.setHeader('Content-Disposition','attachment; filename="tfi-record.json"');return send(200,store.exportRecord(user.id));}
         if(path==='/api/logout'&&req.method==='POST'){await body(req);store.logout(token);res.setHeader('Set-Cookie','tfi_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0');return send(200,{ok:true});}
         if(path==='/api/profile'&&req.method==='POST')return send(200,store.setProfile(user.id,(await body(req)).enabled));
         if(path==='/api/picks'&&req.method==='POST')return send(201,store.add(user.id,await body(req)));

@@ -1,4 +1,4 @@
-import { summarize, profit } from './domain.mjs';
+import { summarize, profit, filterPicks } from './domain.mjs';
 const $=s=>document.querySelector(s);
 const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let state=null,local=false,publicView=false,demo=false;
@@ -20,7 +20,10 @@ function render(){
   $('#workspace').hidden=false;$('#owner-controls').hidden=publicView;$('#record-label').textContent=publicView?'FREE PUBLIC PROFILE':'PRIVATE WORKSPACE';
   $('#record-title').textContent=publicView?`@${state.handle} · Published picks record`:`@${state.user.handle} · Your record`;
   $('#access').textContent=demo?'SYNTHETIC EXAMPLE':publicView?'SELF-REPORTED':state.active?'BETA ACCESS ACTIVE':'READ ONLY · MEMBERSHIP REQUIRED';
-  const filter=$('#filter').value,picks=state.picks.filter(p=>filter==='all'||p.sport===filter),s=summarize(picks);
+  let picks;
+  try{picks=filterPicks(state.picks,{sport:$('#filter').value,from:$('#date-from').value,to:$('#date-to').value});}
+  catch(e){message(e.message,true);return;}
+  const s=summarize(picks);
   const metrics=$('#metrics');metrics.replaceChildren();
   for(const[label,value,detail]of [['Net units',fmt(s.netUnits),`${picks.length} picks · ${s.pending} pending`],['ROI',s.roi===null?'—':`${fmt(s.roi)}%`,`${fmt(s.riskedUnits)} units settled stake`],['Win percentage',s.winPercentage===null?'—':`${fmt(s.winPercentage)}%`,`${s.wins} wins / ${s.losses} losses`],['Other outcomes',`${s.pushes} / ${s.voids}`,'Pushes / voids']]){const tile=make('div',undefined,'metric');tile.append(make('span',label),make('strong',value),make('span',detail));metrics.append(tile);}
   chart(picks);const breakdown=$('#breakdown');breakdown.replaceChildren();
@@ -40,6 +43,8 @@ function render(){
   }
 }
 $('#filter').addEventListener('change',render);
+for(const id of ['#date-from','#date-to'])$(id).addEventListener('change',()=>{message('');render();});
+$('#reset-filters').addEventListener('click',()=>{for(const id of ['#date-from','#date-to'])$(id).value='';$('#filter').value='all';message('');render();});
 $('#account').addEventListener('submit',e=>{e.preventDefault();const button=e.submitter;perform(button,async()=>{const input=Object.fromEntries(new FormData(e.target));if(button.value==='register'){await api('/api/register',input);message('Test account created. Sign in next. New accounts have no paid access; no billing occurred.');e.target.elements.password.value='';return;}await api('/api/login',input);e.target.reset();await dashboard();message('Signed in.');});});
 $('#logout').addEventListener('click',e=>perform(e.target,async()=>{await api('/api/logout',{});state=null;$('#workspace').hidden=true;$('#auth').hidden=false;$('#logout').hidden=true;message('Signed out.');}));
 $('#enable-profile').addEventListener('click',e=>perform(e.target,async()=>{await api('/api/profile',{enabled:true});await dashboard();message('Your public profile is enabled. Private picks stay private.');}));

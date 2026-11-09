@@ -1,4 +1,9 @@
 export const PLANS = Object.freeze({ tracker: 1999, all_access: 3599 });
+export function filterPicks(picks,{sport='all',from='',to=''}={}) {
+  const validDate=s=>s===''||(/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s))&&new Date(s).toISOString().slice(0,10)===s);
+  if(!validDate(from)||!validDate(to)||(from&&to&&from>to))fail(400,'Choose a valid date range');
+  return picks.filter(p=>(sport==='all'||p.sport===sport)&&(!from||p.startsAt.slice(0,10)>=from)&&(!to||p.startsAt.slice(0,10)<=to));
+}
 export function fail(status, message) { throw Object.assign(new Error(message), { status }); }
 export function text(value, name, max = 160) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) fail(400, `Invalid ${name}`);

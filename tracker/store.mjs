@@ -11,13 +11,16 @@ export function openStore(path, clock = Date.now) {
     CREATE TABLE IF NOT EXISTS profiles(user_id TEXT PRIMARY KEY REFERENCES users(id), enabled INTEGER NOT NULL DEFAULT 0);
     CREATE TABLE IF NOT EXISTS picks(id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), data TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL REFERENCES users(id), pick_id TEXT NOT NULL REFERENCES picks(id), at TEXT NOT NULL, action TEXT NOT NULL, data TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS billing_identities(provider_user_id TEXT PRIMARY KEY, user_id TEXT UNIQUE NOT NULL REFERENCES users(id));
+    CREATE TABLE IF NOT EXISTS billing_memberships(id TEXT PRIMARY KEY, provider_user_id TEXT NOT NULL, plan TEXT, expires INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS billing_jobs(id TEXT PRIMARY KEY, membership_id TEXT NOT NULL, type TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0, next_at INTEGER NOT NULL, lease TEXT, lease_until INTEGER);
     CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'Audit is append-only'); END;
     CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'Audit is append-only'); END;
     CREATE TRIGGER IF NOT EXISTS picks_no_delete BEFORE DELETE ON picks BEGIN SELECT RAISE(ABORT,'Picks cannot be deleted'); END;`);
   const iso = () => new Date(clock()).toISOString();
   const transaction = fn => { db.exec('BEGIN IMMEDIATE'); try {const result=fn(); db.exec('COMMIT'); return result;} catch(e){db.exec('ROLLBACK');throw e;} };
   const account = id => { const u=db.prepare('SELECT id,handle FROM users WHERE id=?').get(id); if(!u)fail(401,'Sign in required'); return u; };
-  const entitled = id => {account(id);return !!db.prepare('SELECT 1 FROM entitlements WHERE user_id=? AND expires>?').get(id,clock());};
+  const entitled = id => {account(id);return !!db.prepare('SELECT 1 FROM entitlements WHERE user_id=? AND expires>?').get(id,clock())||!!db.prepare("SELECT 1 FROM billing_memberships m JOIN billing_identities i ON i.provider_user_id=m.provider_user_id WHERE i.user_id=? AND m.expires>? AND m.plan IN ('tracker','all_access')").get(id,clock());};
   const requireAccess = id => {if(!entitled(id))fail(403,'An active Premium Tracker or All Access membership is required');};
   const owned = (id,pickId) => {const row=db.prepare('SELECT data FROM picks WHERE id=? AND user_id=?').get(pickId,id);if(!row)fail(404,'Pick not found');return JSON.parse(row.data);};
   const save = (id,pick,action,detail={}) => {
@@ -28,6 +31,27 @@ export function openStore(path, clock = Date.now) {
   const list = id => db.prepare('SELECT data FROM picks WHERE user_id=? ORDER BY rowid DESC').all(id).map(r=>JSON.parse(r.data));
   return {
     close:()=>db.close(),
+    // Server/operator only. Hosted use requires verified OAuth identity; never accept a client-supplied Whop ID.
+    bindBillingIdentity(id,providerUserId) {account(id);if(!/^user_[A-Za-z0-9]+$/.test(providerUserId))fail(400,'Invalid provider identity');try{db.prepare('INSERT INTO billing_identities VALUES(?,?)').run(providerUserId,id);}catch{fail(409,'Billing identity is already bound');}},
+    enqueueBilling(event) {if(event.ignored)return {ignored:true};const result=db.prepare('INSERT OR IGNORE INTO billing_jobs(id,membership_id,type,next_at) VALUES(?,?,?,?)').run(event.id,event.membershipId,event.type,event.receivedAt);return {accepted:true,duplicate:result.changes===0};},
+    enqueueReconciliation(now=clock()) {let count=0;for(const row of db.prepare('SELECT id FROM billing_memberships').all()){const r=db.prepare('INSERT OR IGNORE INTO billing_jobs(id,membership_id,type,next_at) VALUES(?,?,?,?)').run(`reconcile:${row.id}:${Math.floor(now/600000)}`,row.id,'reconcile',now);count+=r.changes;}return count;},
+    claimBillingJob(now) {return transaction(()=>{
+      // One in-flight verification at a time. Lease token fences a worker that timed out.
+      if(db.prepare("SELECT 1 FROM billing_jobs WHERE status='processing' AND lease_until>?").get(now))return null;
+      const row=db.prepare("SELECT * FROM billing_jobs WHERE (status='pending' AND next_at<=?) OR (status='processing' AND lease_until<=?) ORDER BY next_at,id LIMIT 1").get(now,now);if(!row)return null;
+      const lease=randomUUID();db.prepare("UPDATE billing_jobs SET status='processing',lease=?,lease_until=?,attempts=attempts+1 WHERE id=?").run(lease,now+30000,row.id);return {id:row.id,membershipId:row.membership_id,lease};
+    });},
+    completeBillingJob(id,lease,access,now) {return transaction(()=>{
+      const job=db.prepare("SELECT 1 FROM billing_jobs WHERE id=? AND lease=? AND status='processing' AND lease_until>?").get(id,lease,now);if(!job)fail(409,'Billing job lease expired');
+      const old=db.prepare('SELECT * FROM billing_memberships WHERE id=?').get(access.membershipId);
+      if(old&&old.provider_user_id!==access.providerUserId)fail(409,'Membership owner changed; manual reconciliation required');
+      // Never let an older snapshot restore access; equal-version revocation wins.
+      if(!old||access.updatedAt>old.updated_at||(access.updatedAt===old.updated_at&&access.expires===0))db.prepare('INSERT INTO billing_memberships VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET plan=excluded.plan,expires=excluded.expires,updated_at=excluded.updated_at').run(access.membershipId,access.providerUserId,access.plan,access.expires,access.updatedAt);
+      else if(old&&access.updatedAt===old.updated_at&&old.expires>0)db.prepare('UPDATE billing_memberships SET expires=? WHERE id=?').run(access.expires,access.membershipId);
+      db.prepare("UPDATE billing_jobs SET status='done',lease=NULL,lease_until=NULL WHERE id=?").run(id);
+    });},
+    retryBillingJob(id,lease,now) {db.prepare("UPDATE billing_jobs SET status='pending',next_at=?,lease=NULL,lease_until=NULL WHERE id=? AND lease=? AND status='processing'").run(now+60000,id,lease);},
+    exportRecord(id) {const user=account(id),picks=list(id);return {format:'tfi-tracker-export-v1',exportedAt:iso(),handle:user.handle,picks:picks.map(p=>({...p,history:db.prepare('SELECT at,action,data FROM audit WHERE pick_id=? AND user_id=? ORDER BY id').all(p.id,id).map(r=>({...r,data:JSON.parse(r.data)}))}))};},
     register(input) {
       const handle=text(input.handle,'handle',24).toLowerCase();
       if(!/^[a-z][a-z0-9_]{2,23}$/.test(handle))fail(400,'Handle must be 3–24 lowercase letters, numbers or underscores, starting with a letter');
