@@ -42,3 +42,7 @@ Browser control initially stopped on URL-confidence verification in the precedin
 Limits: this is targeted full-page integration evidence, not complete end-to-end accessibility certification or a full viewport matrix. Physical phones, Firefox/Safari, screen-reader output, full forced-colors traversal and the complete full-page 400% pass remain unverified.
 
 Automated preview checks now verify full-page IDs/ARIA/anchors/local assets, five synthetic cards, unchanged historical markup, absence of scripts in the fallback and unchanged empty production content.
+
+## Later forced-colors and keyboard evidence
+
+See KEYBOARD_CONTRAST_QA.md for the targeted full-fixture forced-colors pass, system-color SVG fix, keyboard menu/history/table checks and exact remaining limits. Earlier statements above describe the evidence available at those stages.

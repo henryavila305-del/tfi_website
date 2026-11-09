@@ -42,3 +42,6 @@
 
 .public-pick{container-type:inline-size}
 @container(max-width:400px){.public-pick dl{grid-template-columns:minmax(0,1fr);gap:.25rem}.public-pick dd{margin-bottom:.75rem}}
+
+/* SVG chart paints also follow the selected high-contrast palette. */
+@media(forced-colors:active){.record-chart text{fill:CanvasText}.record-chart path{stroke:GrayText}.record-chart polyline{stroke:LinkText}}
