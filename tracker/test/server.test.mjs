@@ -41,7 +41,8 @@ test('account to verified synthetic membership to published result works over HT
     const webhook=()=>fetch(base+'/api/webhooks/whop',{method:'POST',headers:{'Content-Type':'application/json','webhook-id':event.id,'webhook-timestamp':timestamp,'webhook-signature':`v1,${signature}`},body:raw});
     assert.equal((await webhook()).status,200);assert.equal((await (await webhook()).json()).duplicate,true);
     assert.equal((await (await get('/api/dashboard',cookie)).json()).active,false);
-    await processBillingJob(store,config,async()=>({id:'mem_e2e',user_id:'user_buyer',account:{id:config.accountId},product_id:'prod_tracker',status:'active',updated_at:new Date(now).toISOString(),current_period_end:new Date(now+86400000).toISOString()}),()=>now);
+    now=Date.now(); // Webhook receipt uses the HTTP server clock; make the queued work due in this simulated store.
+    assert.equal((await processBillingJob(store,config,async()=>({id:'mem_e2e',user_id:'user_buyer',account:{id:config.accountId},product_id:'prod_tracker',status:'active',updated_at:new Date(now).toISOString(),current_period_end:new Date(now+86400000).toISOString()}),()=>now)).processed,true);
     assert.equal((await post('/api/profile',{enabled:true},cookie)).status,200);
     const pick={sport:'NBA',event:'Example A at B',market:'Spread',selection:'A -2',stake:1,odds:-110,oddsFormat:'american',startsAt:new Date(now+60000).toISOString(),visibility:'public'};
     const pubResponse=await post('/api/picks',pick,cookie);assert.equal(pubResponse.status,201);const pub=await pubResponse.json();
