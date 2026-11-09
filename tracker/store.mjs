@@ -2,7 +2,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual, createHash } from 'node:crypto';
 import { fail, text, validatePick, summarize } from './domain.mjs';
 const hash = token => createHash('sha256').update(token).digest('hex');
-export function openStore(path, clock = Date.now) {
+export function openStore(path, clock = Date.now, {environment='sandbox'}={}) {
+  if(environment!=='sandbox')fail(503,'This beta store supports isolated sandbox use only');
   const db = new DatabaseSync(path);
   db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL;
     CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, handle TEXT UNIQUE NOT NULL, salt TEXT NOT NULL, password_hash TEXT NOT NULL, created_at TEXT NOT NULL);
@@ -14,9 +15,16 @@ export function openStore(path, clock = Date.now) {
     CREATE TABLE IF NOT EXISTS billing_identities(provider_user_id TEXT PRIMARY KEY, user_id TEXT UNIQUE NOT NULL REFERENCES users(id));
     CREATE TABLE IF NOT EXISTS billing_memberships(id TEXT PRIMARY KEY, provider_user_id TEXT NOT NULL, plan TEXT, expires INTEGER NOT NULL, updated_at INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS billing_jobs(id TEXT PRIMARY KEY, membership_id TEXT NOT NULL, type TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0, next_at INTEGER NOT NULL, lease TEXT, lease_until INTEGER);
+    CREATE TABLE IF NOT EXISTS tracker_environment(name TEXT PRIMARY KEY CHECK(name='sandbox'));
+    CREATE TABLE IF NOT EXISTS oauth_intents(state_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), session_hash TEXT NOT NULL REFERENCES sessions(token_hash) ON DELETE CASCADE, browser_hash TEXT NOT NULL, verifier TEXT NOT NULL, nonce TEXT NOT NULL, expires INTEGER NOT NULL);
     CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'Audit is append-only'); END;
     CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'Audit is append-only'); END;
     CREATE TRIGGER IF NOT EXISTS picks_no_delete BEFORE DELETE ON picks BEGIN SELECT RAISE(ABORT,'Picks cannot be deleted'); END;`);
+  if(!db.prepare('SELECT 1 FROM tracker_environment').get()){
+    const legacy=db.prepare('SELECT (SELECT count(*) FROM billing_identities)+(SELECT count(*) FROM billing_memberships)+(SELECT count(*) FROM billing_jobs) AS n').get();
+    if(legacy.n){db.close();fail(503,'Legacy billing records need explicit environment review before linking');}
+    db.prepare('INSERT INTO tracker_environment VALUES(?)').run(environment);
+  }
   const iso = () => new Date(clock()).toISOString();
   const transaction = fn => { db.exec('BEGIN IMMEDIATE'); try {const result=fn(); db.exec('COMMIT'); return result;} catch(e){db.exec('ROLLBACK');throw e;} };
   const account = id => { const u=db.prepare('SELECT id,handle FROM users WHERE id=?').get(id); if(!u)fail(401,'Sign in required'); return u; };
@@ -31,6 +39,27 @@ export function openStore(path, clock = Date.now) {
   const list = id => db.prepare('SELECT data FROM picks WHERE user_id=? ORDER BY rowid DESC').all(id).map(r=>JSON.parse(r.data));
   return {
     close:()=>db.close(),
+    beginOAuthLink(id,session,intent) {account(id);return transaction(()=>{
+      const s=db.prepare('SELECT * FROM sessions WHERE token_hash=? AND user_id=? AND expires>?').get(hash(session),id,clock());
+      if(!s||s.expires<clock()+86400000-300000)fail(401,'Sign in again before linking your billing account');
+      db.prepare('DELETE FROM oauth_intents WHERE expires<=? OR session_hash=?').run(clock(),hash(session));
+      db.prepare('INSERT INTO oauth_intents VALUES(?,?,?,?,?,?,?)').run(hash(intent.state),id,hash(session),hash(intent.browser),intent.verifier,intent.nonce,clock()+600000);
+    });},
+    consumeOAuthLink(state,browser) {if(typeof state!=='string'||state.length>128||typeof browser!=='string'||!/^[a-f0-9]{64}$/.test(browser))fail(400,'Invalid account-link callback');return transaction(()=>{
+      const row=db.prepare('SELECT * FROM oauth_intents WHERE state_hash=? AND browser_hash=? AND expires>?').get(hash(state),hash(browser),clock());
+      if(!row)fail(400,'Account-link request expired or already used');
+      if(!db.prepare('SELECT 1 FROM sessions WHERE token_hash=? AND user_id=? AND expires>?').get(row.session_hash,row.user_id,clock()))fail(401,'Original session expired');
+      db.prepare('DELETE FROM oauth_intents WHERE state_hash=?').run(hash(state));
+      return {userId:row.user_id,sessionHash:row.session_hash,verifier:row.verifier,nonce:row.nonce,expires:row.expires};
+    });},
+    completeOAuthLink(intent,providerUserId) {return transaction(()=>{
+      if(intent.expires<=clock()||!db.prepare('SELECT 1 FROM sessions WHERE token_hash=? AND user_id=? AND expires>?').get(intent.sessionHash,intent.userId,clock()))fail(401,'Original session expired');
+      if(!/^user_[A-Za-z0-9]+$/.test(providerUserId))fail(400,'Invalid provider identity');
+      const existing=db.prepare('SELECT user_id FROM billing_identities WHERE provider_user_id=?').get(providerUserId);
+      if(existing?.user_id===intent.userId)return {linked:true};
+      try{db.prepare('INSERT INTO billing_identities VALUES(?,?)').run(providerUserId,intent.userId);}catch{fail(409,'Billing account already linked; automatic relinking is not allowed');}
+      return {linked:true};
+    });},
     // Server/operator only. Hosted use requires verified OAuth identity; never accept a client-supplied Whop ID.
     bindBillingIdentity(id,providerUserId) {account(id);if(!/^user_[A-Za-z0-9]+$/.test(providerUserId))fail(400,'Invalid provider identity');try{db.prepare('INSERT INTO billing_identities VALUES(?,?)').run(providerUserId,id);}catch{fail(409,'Billing identity is already bound');}},
     enqueueBilling(event) {if(event.ignored)return {ignored:true};const result=db.prepare('INSERT OR IGNORE INTO billing_jobs(id,membership_id,type,next_at) VALUES(?,?,?,?)').run(event.id,event.membershipId,event.type,event.receivedAt);return {accepted:true,duplicate:result.changes===0};},
@@ -76,7 +105,7 @@ export function openStore(path, clock = Date.now) {
     authenticate(token) {if(typeof token!=='string'||token.length!==64)fail(401,'Sign in required');const s=db.prepare('SELECT user_id FROM sessions WHERE token_hash=? AND expires>?').get(hash(token),clock());if(!s)fail(401,'Session expired');return account(s.user_id);},
     logout(token) {if(token)db.prepare('DELETE FROM sessions WHERE token_hash=?').run(hash(token));},
     grant(handle,plan,expires) {if(!['tracker','all_access'].includes(plan)||!Number.isFinite(expires)||expires<=clock())fail(400,'Invalid entitlement');const u=db.prepare('SELECT id FROM users WHERE handle=?').get(handle);if(!u)fail(404,'Account not found');db.prepare('INSERT INTO entitlements VALUES(?,?,?) ON CONFLICT(user_id) DO UPDATE SET plan=excluded.plan,expires=excluded.expires').run(u.id,plan,expires);},
-    dashboard(id) {const user=account(id), picks=list(id);return {user,active:entitled(id),profileEnabled:!!db.prepare('SELECT enabled FROM profiles WHERE user_id=?').get(id).enabled,picks,summary:summarize(picks)};},
+    dashboard(id) {const user=account(id), picks=list(id);return {user,active:entitled(id),billingLinked:!!db.prepare('SELECT 1 FROM billing_identities WHERE user_id=?').get(id),profileEnabled:!!db.prepare('SELECT enabled FROM profiles WHERE user_id=?').get(id).enabled,picks,summary:summarize(picks)};},
     setProfile(id,enabled) {requireAccess(id);if(typeof enabled!=='boolean')fail(400,'Invalid profile setting');if(!enabled&&list(id).some(p=>p.publishedAt))fail(409,'Published records remain public; contact support for account privacy requests');db.prepare('UPDATE profiles SET enabled=? WHERE user_id=?').run(Number(enabled),id);return {enabled};},
     add(id,input) {requireAccess(id);return transaction(()=>{const data=validatePick(input,clock());if(data.visibility==='public'&&!db.prepare('SELECT enabled FROM profiles WHERE user_id=?').get(id).enabled)fail(400,'Enable your public profile before publishing');const pick={...data,id:randomUUID(),createdAt:iso(),publishedAt:data.visibility==='public'?iso():null,result:'pending',settledAt:null,verification:'self-reported'};return save(id,pick,'created',{snapshot:pick});});},
     publish(id,pickId) {requireAccess(id);return transaction(()=>{const p=owned(id,pickId);if(p.publishedAt)fail(409,'Already published');if(p.result!=='pending'||Date.parse(p.startsAt)<=clock())fail(409,'Cannot publish a started or settled pick');if(!db.prepare('SELECT enabled FROM profiles WHERE user_id=?').get(id).enabled)fail(400,'Enable your public profile first');p.visibility='public';p.publishedAt=iso();return save(id,p,'published',{snapshot:p});});},

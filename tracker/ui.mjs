@@ -1,7 +1,7 @@
 import { summarize, profit, filterPicks } from './domain.mjs';
 const $=s=>document.querySelector(s);
 const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
-let state=null,local=false,publicView=false,demo=false;
+let state=null,local=false,publicView=false,demo=false,linking=false;
 const fmt=n=>n===null?'—':Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 const date=s=>new Date(s).toLocaleString();
 async function api(path,data){const response=await fetch(path,{method:data===undefined?'GET':'POST',headers:data===undefined?{}:{'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw new Error(result.error||'Request failed');return result;}
@@ -18,6 +18,7 @@ function chart(picks){const summary=summarize(picks),host=$('#chart');host.repla
 }
 function render(){
   $('#workspace').hidden=false;$('#owner-controls').hidden=publicView;$('#record-label').textContent=publicView?'FREE PUBLIC PROFILE':'PRIVATE WORKSPACE';
+  $('#billing-link').hidden=publicView||!linking;$('#connect-whop').hidden=!!state.billingLinked;$('#link-status').textContent=state.billingLinked?'Whop sandbox account connected. Access still depends on current eligible membership.':'Sign in again if your session is older than five minutes before connecting.';
   $('#record-title').textContent=publicView?`@${state.handle} · Published picks record`:`@${state.user.handle} · Your record`;
   $('#access').textContent=demo?'SYNTHETIC EXAMPLE':publicView?'SELF-REPORTED':state.active?'BETA ACCESS ACTIVE':'READ ONLY · MEMBERSHIP REQUIRED';
   let picks;
@@ -46,7 +47,8 @@ $('#filter').addEventListener('change',render);
 for(const id of ['#date-from','#date-to'])$(id).addEventListener('change',()=>{message('');render();});
 $('#reset-filters').addEventListener('click',()=>{for(const id of ['#date-from','#date-to'])$(id).value='';$('#filter').value='all';message('');render();});
 $('#account').addEventListener('submit',e=>{e.preventDefault();const button=e.submitter;perform(button,async()=>{const input=Object.fromEntries(new FormData(e.target));if(button.value==='register'){await api('/api/register',input);message('Test account created. Sign in next. New accounts have no paid access; no billing occurred.');e.target.elements.password.value='';return;}await api('/api/login',input);e.target.reset();await dashboard();message('Signed in.');});});
-$('#logout').addEventListener('click',e=>perform(e.target,async()=>{await api('/api/logout',{});state=null;$('#workspace').hidden=true;$('#auth').hidden=false;$('#logout').hidden=true;message('Signed out.');}));
+$('#logout').addEventListener('click',e=>perform(e.target,async()=>{await api('/api/logout',{});state=null;$('#workspace').hidden=true;$('#billing-link').hidden=true;$('#auth').hidden=false;$('#logout').hidden=true;message('Signed out.');}));
+$('#connect-whop').addEventListener('click',e=>perform(e.target,async()=>{const result=await api('/api/oauth/whop/start',{});const target=new URL(result.authorizeUrl);if(target.origin!=='https://sandbox-api.whop.com'||target.pathname!=='/oauth/authorize')throw new Error('Unexpected sandbox sign-in destination');location.assign(target.href);}));
 $('#enable-profile').addEventListener('click',e=>perform(e.target,async()=>{await api('/api/profile',{enabled:true});await dashboard();message('Your public profile is enabled. Private picks stay private.');}));
 $('#pick-form').addEventListener('submit',e=>{e.preventDefault();perform(e.submitter,async()=>{const data=Object.fromEntries(new FormData(e.target));data.startsAt=new Date(data.startsAt).toISOString();await api('/api/picks',data);e.target.reset();await dashboard();message('Pick saved. Betting details are now locked.');});});
 function example(){
@@ -54,7 +56,7 @@ function example(){
   return [['NFL','Example football A','win'],['NBA','Example basketball B','loss'],['NFL','Example football C','win'],['NHL','Example hockey D','push'],['NBA','Example basketball E','pending']].map(([sport,event,result],i)=>({...base,id:`example-${i}`,sport,event,selection:`Illustrative selection ${i+1}`,result,createdAt:`2026-10-${10+i}T10:00:00Z`,publishedAt:`2026-10-${10+i}T10:00:00Z`,startsAt:`2026-10-${10+i}T18:00:00Z`,settledAt:result==='pending'?null:`2026-10-${10+i}T22:00:00Z`,history:[]}));
 }
 async function start(){
-  try{const r=await api('/api/health');local=r.mode==='isolated-local-beta';}catch{}
+  try{const r=await api('/api/health');local=r.mode==='isolated-local-beta';linking=r.accountLinking===true;}catch{}
   const profile=new URLSearchParams(location.search).get('profile');
   if(!local){demo=true;publicView=true;state={handle:'example_capper',picks:example()};$('#mode').textContent='DESIGN PREVIEW · All picks and results below are synthetic examples. No accounts, payments, saved records, or live services are connected here.';render();return;}
   $('#mode').textContent='ISOLATED LOCAL BETA · Data stays on this computer. No payment is taken. Manual results are self-reported; no live feed is connected.';

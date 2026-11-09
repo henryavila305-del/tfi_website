@@ -71,7 +71,8 @@ test('membership HTTP reader pins API date, encodes IDs, prevents redirects and 
   let request;
   const reader=createMembershipReader({apiKey:'synthetic-test-key',accountId:config.accountId,fetchImpl:async(url,options)=>{request={url,options};return {ok:true,json:async()=>snapshot()};}});
   assert.equal((await reader('mem_test1')).id,'mem_test1');assert.equal(request.options.headers['Api-Version-Date'],BILLING_API_DATE);assert.equal(request.options.redirect,'error');
-  assert.match(request.url,/^https:\/\/api.whop.com\/api\/v1\/memberships\/mem_test1\?account_id=biz_testaccount$/);
+  assert.match(request.url,/^https:\/\/sandbox-api.whop.com\/api\/v1\/memberships\/mem_test1\?account_id=biz_testaccount$/);
+  assert.throws(()=>createMembershipReader({apiKey:'test',accountId:config.accountId,environment:'production'}),{status:503});
   await assert.rejects(()=>reader('../other'),{status:400});
   const bad=createMembershipReader({apiKey:'synthetic-test-key',accountId:config.accountId,fetchImpl:async()=>({ok:false,status:403})});await assert.rejects(()=>bad('mem_test1'),{status:503});
 });

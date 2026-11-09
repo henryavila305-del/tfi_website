@@ -36,11 +36,12 @@ export function membershipAccess(snapshot, config, now=Date.now()) {
   const expires=active&&ends.length?Math.min(now+3600000,...ends):0;
   return {membershipId:snapshot.id,providerUserId:snapshot.user_id,plan:plan||null,expires:expires>now?expires:0,updatedAt};
 }
-export function createMembershipReader({apiKey,accountId,fetchImpl=fetch}) {
+export function createMembershipReader({apiKey,accountId,environment='sandbox',fetchImpl=fetch}) {
+  if(environment!=='sandbox')fail(503,'This staging reader only supports the Whop sandbox');
   if(typeof apiKey!=='string'||!apiKey||!/^biz_[A-Za-z0-9]+$/.test(accountId||''))fail(503,'Membership reader is not configured');
   return async id=>{
     if(!/^mem_[A-Za-z0-9]+$/.test(id))fail(400,'Invalid membership reference');
-    const response=await fetchImpl(`https://api.whop.com/api/v1/memberships/${encodeURIComponent(id)}?account_id=${encodeURIComponent(accountId)}`,{headers:{Authorization:`Bearer ${apiKey}`,'Api-Version-Date':BILLING_API_DATE,Accept:'application/json'},signal:AbortSignal.timeout(4000),redirect:'error'});
+    const response=await fetchImpl(`https://sandbox-api.whop.com/api/v1/memberships/${encodeURIComponent(id)}?account_id=${encodeURIComponent(accountId)}`,{headers:{Authorization:`Bearer ${apiKey}`,'Api-Version-Date':BILLING_API_DATE,Accept:'application/json'},signal:AbortSignal.timeout(4000),redirect:'error'});
     if(!response.ok)fail(503,'Unable to verify current membership');
     const snapshot=await response.json();if(snapshot.id!==id)fail(400,'Membership identity mismatch');return snapshot;
   };

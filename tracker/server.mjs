@@ -4,7 +4,9 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { openStore } from './store.mjs';
 import { fail } from './domain.mjs';
-import { verifyWhopEvent } from './billing.mjs';
+import { verifyWhopEvent, processBillingJob } from './billing.mjs';
+import { oauthConfig, newLinkIntent, authorizeLink, verifyLinkedUser } from './oauth.mjs';
+import { localSandboxOptions } from './config.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const publicFiles=new Map([
   ['/','index.html'],['/index.html','index.html'],['/styles.css','styles.css'],['/app.js','app.js'],['/favicon.svg','favicon.svg'],
@@ -19,7 +21,7 @@ async function rawBody(req,limit=16384) {
   return Buffer.concat(parts).toString('utf8');
 }
 async function body(req){try{const parsed=JSON.parse(await rawBody(req));if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))fail(400,'JSON object required');return parsed;}catch(e){if(e.status)throw e;fail(400,'Invalid JSON object');}}
-export function createTrackerServer(store,{billing=null}={}) {
+export function createTrackerServer(store,{billing=null,oauth=null,oauthTransport={}}={}) {
   const attempts=new Map();
   return http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');
@@ -40,7 +42,20 @@ export function createTrackerServer(store,{billing=null}={}) {
         return send(200,store.enqueueBilling(event));
       }
       if(req.method==='POST'&&req.headers.origin!==`http://${expectedHost}`)fail(403,'Same-origin request required');
-      if(path==='/api/health'&&req.method==='GET')return send(200,{mode:'isolated-local-beta',payments:false,liveFeed:false});
+      if(path==='/api/health'&&req.method==='GET')return send(200,{mode:'isolated-local-beta',payments:false,liveFeed:false,accountLinking:!!oauth});
+      if(path==='/api/oauth/whop/callback'&&req.method==='GET'){
+        res.setHeader('Set-Cookie','tfi_link=; HttpOnly; SameSite=Lax; Path=/api/oauth/whop/callback; Max-Age=0');
+        const config=oauthConfig(oauth);
+        if(config.redirectUri!==`http://${expectedHost}/api/oauth/whop/callback`)fail(503,'Callback does not match this isolated server');
+        if(url.searchParams.getAll('state').length!==1||url.searchParams.getAll('code').length>1)fail(400,'Invalid account-link callback');
+        const bindings=(req.headers.cookie||'').split(';').map(x=>x.trim()).filter(x=>x.startsWith('tfi_link='));
+        if(bindings.length!==1)fail(400,'Missing account-link browser binding');
+        const intent=store.consumeOAuthLink(url.searchParams.get('state'),bindings[0].slice('tfi_link='.length));
+        if(url.searchParams.has('error')||!url.searchParams.has('code'))fail(400,'Account linking was not completed');
+        const identity=await verifyLinkedUser(config,intent,url.searchParams.get('code'),oauthTransport);
+        store.completeOAuthLink(intent,identity.providerUserId);
+        res.writeHead(303,{Location:'/tracker/?link=complete'});return res.end();
+      }
       if(req.method==='POST'&&['/api/register','/api/login'].includes(path)){
         const key=req.socket.remoteAddress, now=Date.now();
         let attempt=attempts.get(key);if(!attempt||attempt.until<=now){attempt={n:0,until:now+60000};attempts.set(key,attempt);}
@@ -52,6 +67,13 @@ export function createTrackerServer(store,{billing=null}={}) {
       if(path.startsWith('/api/public/')&&req.method==='GET')return send(200,store.publicRecord(decodeURIComponent(path.slice('/api/public/'.length))));
       if(path.startsWith('/api/')){
         const token=tokenFrom(req),user=store.authenticate(token);
+        if(path==='/api/oauth/whop/start'&&req.method==='POST'){
+          await body(req);const config=oauthConfig(oauth);
+          if(config.redirectUri!==`http://${expectedHost}/api/oauth/whop/callback`)fail(503,'Callback does not match this isolated server');
+          const intent=newLinkIntent();store.beginOAuthLink(user.id,token,intent);
+          res.setHeader('Set-Cookie',`tfi_link=${intent.browser}; HttpOnly; SameSite=Lax; Path=/api/oauth/whop/callback; Max-Age=600`);
+          return send(200,{authorizeUrl:authorizeLink(config,intent)});
+        }
         if(path==='/api/dashboard'&&req.method==='GET')return send(200,store.dashboard(user.id));
         if(path==='/api/export'&&req.method==='GET'){res.setHeader('Content-Disposition','attachment; filename="tfi-record.json"');return send(200,store.exportRecord(user.id));}
         if(path==='/api/logout'&&req.method==='POST'){await body(req);store.logout(token);res.setHeader('Set-Cookie','tfi_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0');return send(200,{ok:true});}
@@ -72,9 +94,17 @@ export function createTrackerServer(store,{billing=null}={}) {
   });
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+  const options=localSandboxOptions(process.env);
   await mkdir(resolve(root,'.tracker-data'),{recursive:true});
   const store=openStore(resolve(root,'.tracker-data/beta.sqlite'));
-  const server=createTrackerServer(store);
+  const server=createTrackerServer(store,options);
+  let working=false;
+  const worker=options.readMembership?setInterval(async()=>{
+    if(working)return;working=true;
+    try{store.enqueueReconciliation();for(let i=0;i<20;i++)if(!(await processBillingJob(store,options.billing,options.readMembership)).processed)break;}
+    catch{console.error('Sandbox membership verification deferred; access will not be extended without verification.');}
+    finally{working=false;}
+  },10000):null;
   server.listen(4174,'127.0.0.1',()=>console.log('Isolated local beta: http://127.0.0.1:4174/tracker/'));
-  for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>server.close(()=>{store.close();process.exit(0);}));
+  for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{if(worker)clearInterval(worker);server.close(()=>{store.close();process.exit(0);});});
 }

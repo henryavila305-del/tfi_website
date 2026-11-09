@@ -1,6 +1,6 @@
 # Premium Tracker — isolated beta foundation
 
-See [STAGING.md](STAGING.md) for the subsequent billing queue, access-lease, owner export and date-filter implementation, plus what remains disconnected. The statement below that no webhook exists describes the original beta; the receiver now exists in code but is disabled by default and has not received real provider traffic.
+See [STAGING.md](STAGING.md) and [PHASE3.md](PHASE3.md) for the billing queue, sandbox OAuth linking, local configuration, validation and current hosted-staging blocker. These components exist in code and are off by default; no real provider traffic or hosted account flow is claimed.
 
 This branch extends `tfi_website`. It does not modify the separate TFI Live Tracker, hosted databases, DNS, billing products, or production branch.
 

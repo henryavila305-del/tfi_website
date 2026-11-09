@@ -58,3 +58,22 @@ test('account to verified synthetic membership to published result works over HT
     now+=3600001;assert.equal((await post('/api/picks',pick,cookie)).status,403);assert.equal((await get('/api/export',cookie)).status,200);
   }finally{await new Promise(r=>server.close(r));store.close();}
 });
+test('HTTP sandbox linking binds to signed-in account, works without Strict session cookie on callback and rejects replay',async()=>{
+  const now=Date.now(),store=openStore(':memory:',()=>now),oauth={environment:'sandbox',clientId:'app_test',clientSecret:'synthetic-client-secret'};let nonce;
+  const server=createTrackerServer(store,{oauth,oauthTransport:{clock:()=>now,fetchImpl:async(url,options)=>{
+    assert.match(url,/^https:\/\/sandbox-api.whop.com\/oauth\/(token|userinfo)$/);assert.equal(options.redirect,'error');
+    return {ok:true,json:async()=>url.endsWith('/token')?{access_token:'synthetic-access-token',id_token:`provider.${Buffer.from(JSON.stringify({sub:'user_verified',nonce,aud:'app_test',exp:now/1000+60})).toString('base64url')}.signature`}:{sub:'user_verified'}};
+  }}});server.listen(0,'127.0.0.1');await once(server,'listening');const base=`http://127.0.0.1:${server.address().port}`;oauth.allowedOrigin=base;oauth.redirectUri=base+'/api/oauth/whop/callback';
+  const post=(path,data,cookie='')=>fetch(base+path,{method:'POST',headers:{Origin:base,'Content-Type':'application/json',Cookie:cookie},body:JSON.stringify(data)});
+  try{
+    await post('/api/register',{handle:'linker',password:'oauth-http-test-password'});const login=await post('/api/login',{handle:'linker',password:'oauth-http-test-password'}),session=login.headers.get('set-cookie');
+    assert.equal((await post('/api/oauth/whop/start',{})).status,401);
+    const start=await post('/api/oauth/whop/start',{providerUserId:'user_forged'},session);assert.equal(start.status,200);const binding=start.headers.get('set-cookie').split(';')[0];assert.match(start.headers.get('set-cookie'),/SameSite=Lax/);
+    const auth=new URL((await start.json()).authorizeUrl);nonce=auth.searchParams.get('nonce');const callback=base+'/api/oauth/whop/callback?'+new URLSearchParams({state:auth.searchParams.get('state'),code:'one-time-code'});
+    assert.equal((await fetch(callback,{redirect:'manual'})).status,400);
+    const complete=await fetch(callback,{headers:{Cookie:binding},redirect:'manual'});assert.equal(complete.status,303);assert.equal(complete.headers.get('location'),'/tracker/?link=complete');assert.match(complete.headers.get('set-cookie'),/Max-Age=0/);
+    assert.equal((await fetch(callback,{headers:{Cookie:binding},redirect:'manual'})).status,400);
+    const dash=await (await fetch(base+'/api/dashboard',{headers:{Cookie:session}})).json();assert.equal(dash.billingLinked,true);assert.equal(dash.active,false);assert(!JSON.stringify(dash).includes('user_verified'));assert(!JSON.stringify(dash).includes('synthetic-access-token'));
+    for(const path of ['/tracker/oauth.mjs','/tracker/billing.mjs'])assert.equal((await fetch(base+path)).status,404);
+  }finally{await new Promise(r=>server.close(r));store.close();}
+});
