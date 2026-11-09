@@ -19,3 +19,9 @@ Limits: this does not establish actual approval or source authenticity, nor dete
 Source review found inconsistent American-odds notation: positive original odds displayed a plus sign, while positive values in correction history omitted it. The renderer now uses the same signed notation for original and corrected odds, including changes across negative/positive prices.
 
 Additional regression checks exercise interleaved odds and result corrections, preserved chronological rendering, independent per-field chains, deep-frozen source inputs, cross-pick statistics and rejection of base values inconsistent with the correction chain. These checks do not prove immutability between source-file versions; the durable-retention gate remains.
+
+## Prior-snapshot retention follow-up
+
+Added a read-only transition validator and explicit-path CLI. Regression tests reject deletion/renaming of old picks, changed original odds/results or withdrawal evidence, removed/truncated corrections, rewritten reasons/timestamps/approval references, reordered same-time independent corrections, and self-consistent base/history rewrites. Valid appends, unchanged/frozen snapshots, reordered JSON keys and multiple pick records pass. CLI tests run only against an isolated temporary directory and verify unchanged real publication content.
+
+This provides a comparison against a supplied prior snapshot, not immutable storage. A trusted complete baseline and mandatory use in any future publication path remain unimplemented. Ordinary base-result updates, including transition into withdrawal, fail closed; a future event-based withdrawal lifecycle must preserve existing base/history instead.

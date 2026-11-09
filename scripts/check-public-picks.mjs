@@ -1,7 +1,7 @@
 
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validatePublicPicks, summarizePublicPicks } from './public-picks.mjs';
+import { validatePublicPicks, summarizePublicPicks, validatePublicPickTransition } from './public-picks.mjs';
 const picks = validatePublicPicks(JSON.parse(await readFile('content/public-picks.json', 'utf8')));
 assert.equal(picks.length, 0, 'Public publication remains on hold; board must stay empty');
 const sample = { id:'synthetic-test-only', sport:'NBA', selection:'Synthetic selection', market:'Synthetic market', odds:-110, publishedAt:'2026-11-01T12:00:00.000Z', eventAt:'2026-11-01T13:00:00.000Z', reasoning:'Synthetic validation fixture; never published.', result:'pending', publicApproved:true, approvalReference:'synthetic-test-only' };
@@ -92,3 +92,74 @@ assert.throws(()=>validatePublicPicks([{...interleaved,result:'loss'}]), /value 
 assert.throws(()=>validatePublicPicks([{...interleaved,corrections:[interleaved.corrections[0],interleaved.corrections[2],interleaved.corrections[1]]}]), /ordered/);
 assert.equal(summarizePublicPicks([graded,{...sample,id:'independent-loss',result:'loss'}]).winPercentage,50);
 console.log('Passed interleaved correction chains, frozen-source preservation, inconsistent base-value rejection and cross-pick statistics.');
+
+const retained = JSON.parse(JSON.stringify(revised));
+const appended = {...retained,corrections:[...retained.corrections,{...grade,from:'loss',to:'win',correctedAt:'2026-11-01T16:00:00.000Z'}]};
+const retainedBytes = JSON.stringify(retained), appendedBytes = JSON.stringify(appended);
+assert.equal(validatePublicPickTransition([retained],[appended])[0],appended);
+assert.equal(validatePublicPickTransition([sample],[corrected])[0],corrected,'First correction may be appended');
+assert.equal(validatePublicPickTransition([retained],[JSON.parse(retainedBytes)]).length,1,'Unchanged records are valid');
+assert.equal(validatePublicPickTransition([],[sample]).length,1,'New synthetic records are allowed by the retention validator only');
+assert.equal(validatePublicPickTransition([],[]).length,0);
+assert.equal(JSON.stringify(retained),retainedBytes);
+assert.equal(JSON.stringify(appended),appendedBytes);
+assert.throws(()=>validatePublicPickTransition([retained],[]), /deleted or renamed/);
+assert.throws(()=>validatePublicPickTransition([retained],[{...retained,id:'renamed'}]), /deleted or renamed/);
+assert.throws(()=>validatePublicPickTransition([retained],[{...sample}]), /deleted/);
+assert.throws(()=>validatePublicPickTransition([retained],[{...retained,corrections:retained.corrections.slice(0,1)}]), /deleted/);
+for(const key of ['reason','approvalReference','correctedAt']) {
+  const history = JSON.parse(JSON.stringify(retained.corrections));
+  history[0][key] = key === 'correctedAt' ? '2026-11-01T14:01:00.000Z' : 'Changed prior evidence';
+  assert.throws(()=>validatePublicPickTransition([retained],[{...retained,corrections:history}]), /rewritten/);
+}
+assert.throws(()=>validatePublicPickTransition([sample],[{...sample,odds:105}]), /Original public field/);
+assert.throws(()=>validatePublicPickTransition([sample],[{...sample,result:'win'}]), /Original public field/);
+for(const patch of [{selection:'New selection'},{market:'New market'},{reasoning:'Changed reason'},{approvalReference:'new-reference'},{eventAt:'2026-11-01T14:00:00.000Z'},{publishedAt:'2026-11-01T11:00:00.000Z'}])
+  assert.throws(()=>validatePublicPickTransition([sample],[{...sample,...patch}]), /Original public field/);
+const oddsRewrite = {...corrected,odds:-115,corrections:[{...correction,from:-115}]};
+validatePublicPicks([oddsRewrite]); // A self-consistent rewrite passes single-snapshot validation.
+assert.throws(()=>validatePublicPickTransition([corrected],[oddsRewrite]), /Original public field/);
+const chainRewrite = {...corrected,corrections:[{...correction,to:105}]};
+validatePublicPicks([chainRewrite]);
+assert.throws(()=>validatePublicPickTransition([corrected],[chainRewrite]), /rewritten/);
+assert.throws(()=>validatePublicPickTransition([withdrawn],[{...withdrawn,withdrawalReason:'Changed withdrawal reason'}]), /Original public field/);
+assert.throws(()=>validatePublicPickTransition([sample],[{...sample,corrections:[{...correction,publicApproved:false}]}]));
+assert.throws(()=>validatePublicPickTransition([{...sample,publicApproved:false}],[sample]), /approval/);
+assert.equal(validatePublicPickTransition([sample,{...sample,id:'second-prior'}],[{...sample,id:'second-prior'},sample,{...sample,id:'new-third'}]).length,3,'Board order does not change correction order');
+const reorderedKeys = {...retained,corrections:retained.corrections.map(item=>Object.fromEntries(Object.entries(item).reverse()))};
+assert.equal(validatePublicPickTransition([retained],[reorderedKeys]).length,1,'JSON object key order is immaterial');
+console.log('Passed snapshot retention, immutable originals, append-only correction prefixes and self-consistent tampering rejection.');
+
+const sameTime = {...sample,corrections:[{...correction,correctedAt:grade.correctedAt},{...grade}]};
+const reorderedHistory = {...sameTime,corrections:[sameTime.corrections[1],sameTime.corrections[0]]};
+validatePublicPicks([reorderedHistory]);
+assert.throws(()=>validatePublicPickTransition([sameTime],[reorderedHistory]), /rewritten or reordered/);
+const frozenPrior = JSON.parse(JSON.stringify(retained)), frozenNext = JSON.parse(JSON.stringify(appended));
+for(const pick of [frozenPrior,frozenNext]) { for(const item of pick.corrections) Object.freeze(item); Object.freeze(pick.corrections); Object.freeze(pick); }
+assert.equal(validatePublicPickTransition(Object.freeze([frozenPrior]),Object.freeze([frozenNext])).length,1);
+
+const {mkdtemp,writeFile,rm} = await import('node:fs/promises');
+const {tmpdir} = await import('node:os');
+const {join,resolve,dirname,basename} = await import('node:path');
+const {spawnSync} = await import('node:child_process');
+const historyDirectory = await mkdtemp(join(tmpdir(),'tfi-history-review-'));
+const liveContentBefore = await readFile('content/public-picks.json','utf8');
+try {
+  const priorPath=join(historyDirectory,'prior.json'), nextPath=join(historyDirectory,'next.json');
+  await writeFile(priorPath,JSON.stringify([retained]));
+  await writeFile(nextPath,JSON.stringify([appended]));
+  const run = args => spawnSync(process.execPath,['scripts/check-public-pick-history.mjs',...args],{encoding:'utf8'});
+  assert.equal(run([priorPath,nextPath]).status,0);
+  assert.notEqual(run([]).status,0,'Missing explicit baseline must fail closed');
+  assert.notEqual(run([join(historyDirectory,'missing.json'),nextPath]).status,0,'Missing baseline file must fail closed');
+  await writeFile(nextPath,JSON.stringify([{...sample}]));
+  assert.notEqual(run([priorPath,nextPath]).status,0,'CLI rejects deletion of earlier corrections');
+  assert.equal(await readFile(priorPath,'utf8'),JSON.stringify([retained]),'Comparison must not edit baseline');
+  assert.equal(await readFile(nextPath,'utf8'),JSON.stringify([{...sample}]),'Comparison must not edit candidate');
+  assert.equal(await readFile('content/public-picks.json','utf8'),liveContentBefore);
+} finally {
+  assert.equal(dirname(resolve(historyDirectory)),resolve(tmpdir()));
+  assert.match(basename(historyDirectory),/^tfi-history-review-/);
+  await rm(historyDirectory,{recursive:true,force:true});
+}
+console.log('Passed correction reordering rejection, frozen snapshots and read-only CLI fail-closed behavior.');

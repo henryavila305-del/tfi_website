@@ -70,3 +70,27 @@ export function summarizePublicPicks(picks) {
   const losses = picks.filter(pick => effectivePublicResult(pick) === 'loss').length;
   return { wins, losses, winPercentage: wins + losses ? 100 * wins / (wins + losses) : null };
 }
+
+
+// Caller must supply a trusted prior snapshot. This validates retention, not baseline authenticity.
+export function validatePublicPickTransition(previous, candidate) {
+  validatePublicPicks(previous);
+  validatePublicPicks(candidate);
+  const nextById = new Map(candidate.map(pick => [pick.id, pick]));
+  for (const prior of previous) {
+    const next = nextById.get(prior.id);
+    requireValue(next, 'Previously recorded pick cannot be deleted or renamed: ' + prior.id);
+    for (const key of [...fields, ...(prior.result === 'withdrawn' ? withdrawalFields : [])]) {
+      requireValue(next[key] === prior[key], 'Original public field cannot be rewritten: ' + prior.id + ' / ' + key);
+    }
+    const history = prior.corrections ?? [];
+    const nextHistory = next.corrections ?? [];
+    requireValue(nextHistory.length >= history.length, 'Prior corrections cannot be deleted: ' + prior.id);
+    for (let index = 0; index < history.length; index++) {
+      for (const key of Object.keys(history[index])) {
+        requireValue(nextHistory[index][key] === history[index][key], 'Prior correction cannot be rewritten or reordered: ' + prior.id + ' / ' + index + ' / ' + key);
+      }
+    }
+  }
+  return candidate;
+}
