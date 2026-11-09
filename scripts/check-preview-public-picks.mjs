@@ -9,9 +9,14 @@ const directory = 'work/pick-preview/';
 const full = await read(directory+'full.html'), fallback = await read(directory+'full-no-script.html');
 for (const html of [full,fallback]) {
   assert.match(html,/SYNTHETIC REVIEW ONLY/);
-  assert.match(html,/PUBLIC PICKS · 5/);
+  assert.match(html,/PUBLIC PICKS · 6/);
   assert(!html.includes('AWAITING PUBLICATION'));
-  assert.equal((html.match(/class="public-pick"/g)||[]).length,5);
+  assert.equal((html.match(/class="public-pick"/g)||[]).length,6);
+  assert(html.includes('<dd>withdrawn</dd>'));
+  assert(html.includes('Synthetic withdrawal only'));
+  assert(html.includes('2026-11-01T12:30:00.000Z'));
+  assert(html.includes('Win percentage: 50.0%'));
+  assert(!html.includes('synthetic-withdrawal-reference'));
   assert(!html.includes('synthetic-only'),'Approval metadata must not render');
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
   assert.equal(ids.length,new Set(ids).size,'Full page must have unique IDs');

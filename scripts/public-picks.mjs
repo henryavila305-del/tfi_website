@@ -1,5 +1,6 @@
 
 const fields = ['id','sport','selection','market','odds','publishedAt','eventAt','reasoning','result','publicApproved','approvalReference'];
+const withdrawalFields = ['withdrawalReason','withdrawnAt','withdrawalApproved','withdrawalApprovalReference'];
 const sports = ['NFL','NBA','MLB','NHL','NCAAF','NCAAB'];
 function requireValue(condition, message) { if (!condition) throw new Error(message); }
 function timestamp(value) {
@@ -11,8 +12,8 @@ export function validatePublicPicks(picks) {
   const ids = new Set();
   for (const pick of picks) {
     requireValue(pick && typeof pick === 'object' && !Array.isArray(pick), 'Each pick must be an object');
-    requireValue(Object.keys(pick).sort().join('|') === [...fields].sort().join('|'), 'Unexpected or missing public fields');
-    for (const key of ['id','selection','market','reasoning','approvalReference']) {
+    requireValue(Object.keys(pick).sort().join('|') === [...fields, ...(pick.result === 'withdrawn' ? withdrawalFields : [])].sort().join('|'), 'Unexpected or missing public fields');
+    for (const key of ['id','selection','market','reasoning','approvalReference', ...(pick.result === 'withdrawn' ? ['withdrawalReason','withdrawalApprovalReference'] : [])]) {
       requireValue(typeof pick[key] === 'string' && pick[key].trim().length > 0 && pick[key].length <= 2000, 'Missing or oversized ' + key);
       requireValue(!/[<>\u0000-\u001f]/.test(pick[key]), 'Unsafe text in ' + key);
     }
@@ -23,7 +24,20 @@ export function validatePublicPicks(picks) {
     requireValue(timestamp(pick.publishedAt) && timestamp(pick.eventAt), 'Use valid canonical UTC timestamps');
     requireValue(Date.parse(pick.publishedAt) < Date.parse(pick.eventAt), 'Publication must precede event');
     requireValue(pick.publicApproved === true, 'Explicit public approval required');
-    requireValue(['pending','win','loss','push','void'].includes(pick.result), 'Invalid result');
+    if (pick.result === 'withdrawn') {
+      requireValue(pick.withdrawalApproved === true, 'Explicit withdrawal approval required');
+      requireValue(timestamp(pick.withdrawnAt), 'Use valid canonical UTC withdrawal time');
+      requireValue(Date.parse(pick.withdrawnAt) >= Date.parse(pick.publishedAt), 'Withdrawal cannot precede publication');
+    }
+    requireValue(['pending','win','loss','push','void','withdrawn'].includes(pick.result), 'Invalid result');
   }
   return picks;
+}
+
+// Counts reflect validated public records only; historical aggregates remain separate.
+export function summarizePublicPicks(picks) {
+  validatePublicPicks(picks);
+  const wins = picks.filter(pick => pick.result === 'win').length;
+  const losses = picks.filter(pick => pick.result === 'loss').length;
+  return { wins, losses, winPercentage: wins + losses ? 100 * wins / (wins + losses) : null };
 }

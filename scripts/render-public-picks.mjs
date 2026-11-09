@@ -1,4 +1,4 @@
-import { validatePublicPicks } from './public-picks.mjs';
+import { validatePublicPicks, summarizePublicPicks } from './public-picks.mjs';
 const start = '<!-- public-picks:start -->';
 const end = '<!-- public-picks:end -->';
 function escapeHtml(value) {
@@ -24,13 +24,18 @@ export function renderPublicPicks(template, picks) {
   const cards = picks.map(pick => {
     const text = key => escapeHtml(pick[key]);
     const odds = pick.odds > 0 ? '+' + pick.odds : String(pick.odds);
+    const withdrawal = pick.result === 'withdrawn'
+      ? '<dt>Withdrawal reason</dt><dd>' + text('withdrawalReason') + '</dd><dt>Withdrawn (UTC)</dt><dd><time datetime="' + text('withdrawnAt') + '">' + text('withdrawnAt') + '</time></dd>' : '';
     return '<article class="public-pick" aria-labelledby="public-pick-' + text('id') + '"><h3 id="public-pick-' + text('id') + '">' + text('sport') + ' — ' + text('selection') + '</h3>'
       + '<dl><dt>Market</dt><dd>' + text('market') + '</dd><dt>American odds</dt><dd>' + odds + '</dd>'
       + '<dt>Published (UTC)</dt><dd><time datetime="' + text('publishedAt') + '">' + text('publishedAt') + '</time></dd>'
       + '<dt>Event (UTC)</dt><dd><time datetime="' + text('eventAt') + '">' + text('eventAt') + '</time></dd>'
-      + '<dt>Result</dt><dd>' + text('result') + '</dd></dl><p>' + text('reasoning') + '</p></article>';
+      + '<dt>Result</dt><dd>' + text('result') + '</dd>' + withdrawal + '</dl><p>' + text('reasoning') + '</p></article>';
   }).join('\n');
-  const populated = template.slice(0, from) + '\n' + cards + '\n' + template.slice(to);
+  const summary = summarizePublicPicks(picks);
+  const percentage = summary.winPercentage === null ? 'Not available (no wins or losses)' : summary.winPercentage.toFixed(1) + '%';
+  const record = '<p>Public record: ' + summary.wins + ' wins, ' + summary.losses + ' losses. Win percentage: ' + percentage + '. Pending, push, void and withdrawn picks are excluded.</p>';
+  const populated = template.slice(0, from) + '\n' + record + '\n' + cards + '\n' + template.slice(to);
   const statusFrom = populated.indexOf(statusStart) + statusStart.length;
   const statusTo = populated.indexOf(statusEnd);
   return populated.slice(0, statusFrom) + 'PUBLIC PICKS · ' + picks.length + populated.slice(statusTo);

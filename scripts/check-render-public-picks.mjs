@@ -34,3 +34,17 @@ for (const attribute of ['id="public-pick-synthetic-render-only"', "id='public-p
 // IDs inside the replaced slot do not survive and should not block valid rendering.
 assert(renderPublicPicks(template.replace(start,start+'<div id="public-pick-synthetic-render-only"></div>'),[sample]).includes('PUBLIC PICKS · 1'));
 console.log('Passed rendering, escaping, result labels, slot boundaries, empty fallback and accessible heading ID collision checks.');
+
+const withdrawn = {...sample, result:'withdrawn', withdrawnAt:'2026-11-01T12:30:00.000Z', withdrawalReason:'Synthetic A & B "withdrawal"', withdrawalApproved:true, withdrawalApprovalReference:'synthetic-withdrawal-secret-reference'};
+const withdrawalHtml = renderPublicPicks(template,[withdrawn]);
+assert(withdrawalHtml.includes('<dd>withdrawn</dd>'));
+assert(withdrawalHtml.includes('Synthetic A &amp; B &quot;withdrawal&quot;'));
+assert(withdrawalHtml.includes('<time datetime="' + withdrawn.withdrawnAt + '">' + withdrawn.withdrawnAt + '</time>'));
+assert(withdrawalHtml.includes(sample.selection.replaceAll('&','&amp;').replaceAll('"','&quot;')), 'Withdrawn entry stays visible');
+assert(!withdrawalHtml.includes(withdrawn.withdrawalApprovalReference));
+assert(!withdrawalHtml.includes(sample.approvalReference));
+assert(withdrawalHtml.includes('Win percentage: Not available (no wins or losses)'));
+const mixedHtml = renderPublicPicks(template,[withdrawn,{...sample,id:'synthetic-win',result:'win'},{...sample,id:'synthetic-loss',result:'loss'}]);
+assert(mixedHtml.includes('Win percentage: 50.0%'));
+assert(mixedHtml.includes('Pending, push, void and withdrawn picks are excluded.'));
+console.log('Passed retained withdrawal cards, escaped reasons, UTC times, hidden approval references and rendered percentage.');
