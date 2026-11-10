@@ -1,9 +1,10 @@
+import {updateLivePicks} from './live-scores.mjs';
 import {config} from './spotlight-config.mjs';
 import {latestCard,cardSummary} from './top-three-core.mjs';
 const board=document.querySelector('.completed-board');
 const templates=[...board.querySelectorAll('.ranked-pick')].map(p=>p.cloneNode(true));
 const check=templates[0].querySelector('.result-pill svg').cloneNode(true);
-const logos={'Dallas Mavericks':['nba','dal'],'New York Islanders':['nhl','nyi'],'Buffalo Bills':['nfl','buf'],'Denver Broncos':['nfl','den'],'New York Giants':['nfl','nyg'],'Boston Bruins':['nhl','bos']};
+const logos={'Dallas Mavericks':['nba','dal'],'New York Islanders':['nhl','nyi'],'Buffalo Bills':['nfl','buf'],'Denver Broncos':['nfl','den'],'New York Giants':['nfl','nyg'],'Boston Bruins':['nhl','bos'],'Minnesota Wild':['nhl','min'],'Oklahoma City Thunder':['nba','okc'],'Colorado Avalanche':['nhl','col']};
 let busy=false;
 async function refresh() {
   if(busy || document.hidden)return;
@@ -34,6 +35,7 @@ async function refresh() {
       return el;
     });
     board.querySelector('.completed-grid').replaceChildren(...nodes);
+    updateLivePicks(card.picks);
     board.setAttribute('aria-label',`${label} Top 3`);
     const tag=board.querySelector('.date-tag');tag.replaceChildren(document.createTextNode(date.toLocaleDateString('en-US',{weekday:'long',timeZone:'UTC'}).toUpperCase()),document.createElement('br'));
     const dateText=document.createElement('strong');dateText.textContent=date.toLocaleDateString('en-US',{month:'short',day:'2-digit',timeZone:'UTC'}).toUpperCase();tag.append(dateText);

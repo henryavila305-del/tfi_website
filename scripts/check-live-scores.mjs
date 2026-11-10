@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {scoreForPick} from '../live-score-core.mjs';
+import handler from '../api/scores.js';
+const p={pick_team:'Minnesota Wild',opponent:'Montreal Canadiens'};
+const e={id:'123',status:{type:{state:'in',shortDetail:'2nd · 12:34'},displayClock:'12:34',period:2},competitions:[{competitors:[{team:{displayName:p.pick_team},score:'2'},{team:{displayName:p.opponent},score:'1'}]}]};
+assert.equal(scoreForPick(p,[e]).teamScore,2);assert.equal(scoreForPick(p,[e]).clock,'12:34');
+assert.equal(scoreForPick(p,[e,e]),null);assert.equal(scoreForPick({...p,espn_event_id:'wrong'},[e]),null);assert.equal(scoreForPick({...p,opponent:'Wrong'},[e]),null);
+assert.equal(scoreForPick(p,[{...e,status:{type:{state:'pre'}}}]).teamScore,null);
+assert.equal(scoreForPick(p,[{...e,status:{type:{state:'post',completed:true}}}]).completed,true);
+const response=()=>({headers:{},setHeader(k,v){this.headers[k]=v;},status(n){this.code=n;return this;},json(j){this.body=j;return this;}});
+let r=response();await handler({method:'GET',query:{sport:'https://evil.test',date:'2026-11-10'}},r);assert.equal(r.code,400);
+r=response();await handler({method:'POST',query:{}},r);assert.equal(r.code,405);
+const old=globalThis.fetch;globalThis.fetch=async()=>({ok:true,json:async()=>({events:[e]})});r=response();await handler({method:'GET',query:{sport:'NHL',date:'2026-11-10'}},r);assert.equal(r.code,200);assert.equal(r.body.events[0].competitions[0].competitors[0].score,'2');
+globalThis.fetch=async()=>{throw Error('offline');};r=response();await handler({method:'GET',query:{sport:'NHL',date:'2026-11-10'}},r);assert.equal(r.code,503);globalThis.fetch=old;
+console.log('Passed live, pregame, final, ambiguous and mismatched events; endpoint validation and upstream failure.');
