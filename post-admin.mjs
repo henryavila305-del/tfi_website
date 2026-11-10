@@ -47,7 +47,7 @@ async function save(payload){
 }
 $('post-form').addEventListener('submit',async event=>{
  event.preventDefault();if(busy)return;
- try{requireSession();const post=parsePostUrl($('post-url').value);if(!previewed||previewed.post_id!==post.post_id)throw new Error('Preview this link before saving.');busy=true;controls(true);say('Saving…');await save({...post,enabled:true});say('Saved. The preview window now uses this X post. Open pages refresh within one minute.');}
+ try{requireSession();const post=parsePostUrl($('post-url').value);if(!previewed||previewed.post_id!==post.post_id)throw new Error('Preview this link before saving.');busy=true;controls(true);say('Saving…');await save({...post,enabled:true});say('Saved. The Cashed window now uses this X post. Open pages refresh within one minute.');}
  catch(error){say(error.name==='AbortError'?'Save timed out. Reload to check the current post before trying again.':error.message);previewed=null;}
  finally{busy=false;controls(false);}
 });

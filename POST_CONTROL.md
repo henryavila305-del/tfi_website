@@ -1,6 +1,6 @@
 # Featured X post control
 
-Open `post-admin.html`, sign in with an existing TFI tracker administrator account, paste a public @thefavindex status URL, preview, then Save to preview. The selected post is shared with all visitors to this preview. The archive artwork remains the default until a post is saved. Show archive graphic reversibly disables the selected post while retaining its URL.
+Open `post-admin.html`, sign in with an existing TFI tracker administrator account, paste a public @thefavindex status URL, preview, then Save featured post. The selected post is shared with all website visitors. The archive artwork remains the default until a post is saved. Show archive graphic reversibly disables the selected post while retaining its URL.
 
 The page stores only a canonical public post URL, string post ID, enabled flag, server revision and server update time in `public.tfi_site_spotlight`, slot `cashed_preview`. It does not scan the timeline or independently verify a win. The user chooses and reviews the post. X renders the post and its media through its official widget. No X API token or paid X API integration is used. A blocked, restricted or deleted post falls back to a direct link. Page loads and one-minute foreground refreshes read the current slot without a site deployment.
 
@@ -8,4 +8,4 @@ Authorization reuses the existing `tfi_admins` table and Supabase Auth. Public v
 
 Database migration `add_preview_site_spotlight_admin` was applied through Supabase. Source SQL is retained in docs/spotlight-schema.sql. Existing picks, grading, admin membership and public-feed policies were not altered. Rollback tests confirmed admin insert/update, non-admin insert rejection, non-admin update affecting zero rows and no anonymous write grants. Tests are rolled back; no sample post is stored.
 
-Validation: npm run check; npm run build:check; public REST GET returns HTTP 200 with an empty array before first save. First real administrator login and post selection need the user's existing credentials and selected X link. The production website remains on main; this feature is on the design preview branch and draft PR #6 only.
+Validation: npm run check; npm run build:check; public REST GET returns HTTP 200 with an empty array before first save. The user completed the first administrator login and save; the November 8 results post rendered successfully in the supplied screenshots. Production release is authorized in the conversation. Both the preview and production site use the same saved featured-post slot.
