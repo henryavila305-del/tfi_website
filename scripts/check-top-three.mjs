@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {latestCard,cardSummary} from '../top-three-core.mjs';
+const pick=(rank,date='2026-11-09',status='win')=>({category:`Top 3 #${rank}`,game_date:date,pick_team:'Team',opponent:'Opponent',bet_type:'Moneyline',odds:-135,status});
+const rows=[pick(1),pick(3),pick(2,'2026-11-09','loss'),{...pick(1),category:'Main Premium'},pick(2,'2026-11-08')];
+const card=latestCard(rows);assert.deepEqual(card.picks.map(p=>p.category),['Top 3 #3','Top 3 #2','Top 3 #1']);assert.equal(cardSummary(card.picks).text,'2–1 FINAL.');
+assert.equal(cardSummary(latestCard([pick(1,'2026-11-10','pending'),...rows]).picks).complete,false);
+assert.equal(latestCard([{...pick(1),category:'Main Premium'}]),null);
+assert.throws(()=>latestCard([pick(1),pick(1)]));assert.throws(()=>latestCard({}));
+assert.equal(cardSummary([pick(1),pick(2),pick(3)]).text,'3–0 SWEEP.');
+console.log('Passed: latest date, rank order, partial cards, duplicate rejection, Premium exclusion, honest results.');
