@@ -44,7 +44,7 @@ assert.match(
   'Official TFI Premium membership link must be enabled and secure'
 );
 const externalUrls = [...html.matchAll(/https:\/\/[^\s"'<>]+/g)].map(match => match[0]);
-assert.deepEqual(externalUrls, whopUrls, 'Only the two approved Whop destinations are allowed');
+assert.deepEqual(externalUrls, whopUrls, 'Only the two approved Whop destinations are allowed in initial HTML');
 
 
 assert(!/supabase|api[_-]?key|service_role|password/i.test(html), 'No private integration configuration');
@@ -54,6 +54,6 @@ assert(!/@import|url\(\s*['"]?https?:/i.test(css), 'CSS must not load remote ass
 assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(|\.sendBeacon\s*\(/.test(js), 'Public preview must remain disconnected from data services');
 assert(!/<(?:iframe|form)\b/i.test(html), 'No embedded services or collection forms in this preview');
 execFileSync(process.execPath, ['--check', 'app.js']);
-console.log(`Passed: ${ids.length} unique anchors, local assets, honest content states, no external integration, JavaScript syntax.`);
+console.log(`Passed: ${ids.length} unique anchors, local assets, honest initial content states, approved links, JavaScript syntax.`);
 
 
