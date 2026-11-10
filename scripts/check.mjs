@@ -24,7 +24,8 @@ for (const id of ['picks', 'results', 'sports', 'premium', 'about']) {
   assert(html.includes(`<section id="${id}" tabindex="-1"`), `${id} can receive menu focus`);
 }
 assert.match(html, /id="sport-detail" role="region" aria-labelledby="sport-title"/);
-assert.match(html, /NEXT CARD STARTS HERE/);
+assert(!html.includes('NEXT CARD STARTS HERE'), 'Remove obsolete public-board placeholder');
+assert.match(html, /<section id="picks" tabindex="-1" class="hero-board completed-board"/, 'Free Picks targets the live card');
 assert.match(html, /PUBLIC PICKS \/ HISTORICAL RESULTS/, 'Preview status must be visible in the hero');
 assert.match(html, /historical selections, not current picks/, 'Completed hero card is clearly dated');
 assert.equal((html.match(/class="ranked-pick /g)||[]).length,3,'Three historical ranked selections');

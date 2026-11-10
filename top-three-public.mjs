@@ -41,9 +41,6 @@ async function refresh() {
     board.querySelector('.sweep>span').textContent=summary.complete?'EVERY RESULT RECORDED.':'RESULTS UPDATE AFTER GRADING.';
     board.querySelector('.sweep strong').textContent=summary.text;
     board.querySelector('.board-disclosure').textContent=`${label} · ${summary.complete?'Completed selections, not current picks.':'Published selections; pending results are not counted as wins.'} Synced from the public tracker.`;
-    document.querySelector('#picks .status').textContent='CONNECTED TO THE PUBLIC TRACKER';
-    document.querySelector('#picks .board>div>p').textContent='The latest published Top 3 appears above. Picks and graded results refresh automatically from the public tracker.';
-    document.querySelector('#picks .note').textContent='Only public Top 3 selections appear here. Historical record graphs below are separate imports.';
   } catch {board.querySelector('.board-disclosure').textContent+=''; /* Preserve the last clearly dated card on network failure. */}
   finally {busy=false;}
 }
