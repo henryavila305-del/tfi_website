@@ -3,8 +3,8 @@ import { readFile, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 
 execFileSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
-const expected = ['app.js', 'favicon.svg', 'index.html', 'records.js', 'styles.css'];
-assert.deepEqual((await readdir('dist')).sort(), expected, 'Output must contain only the public static assets');
+const expected = ['app.js', 'favicon.svg', 'index.html', 'records.js', 'review.html', 'tfi-banner.webp', 'tfi-logo.webp', 'cashed-spotlight.webp', 'post-admin.html', 'post-admin.mjs', 'spotlight-core.mjs', 'spotlight-config.mjs', 'spotlight-public.mjs', 'styles.css'];
+assert.deepEqual((await readdir('dist')).sort(), [...expected].sort(), 'Output must contain only the public static assets');
 for (const asset of expected) {
   assert.deepEqual(await readFile(`dist/${asset}`), await readFile(asset), `Built ${asset} must match the reviewed source`);
 }
@@ -14,4 +14,5 @@ for (const asset of expected) {
   assert.deepEqual(await readFile(`dist/${asset}`), await readFile(asset), `Repeated build changed ${asset}`);
 }
 console.log('Passed: exact public output allowlist, byte-for-byte source match, and repeatable build.');
+
 
