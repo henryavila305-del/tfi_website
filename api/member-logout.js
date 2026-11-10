@@ -1,0 +1,2 @@
+import {settings,headers,session} from '../lib/member-auth.mjs';
+export default async function handler(req,res){headers(res);if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});try{const cfg=settings();if(req.headers.origin!==cfg.origin)return res.status(403).json({error:'Invalid origin'});const s=await session(req,res,cfg);s.destroy();return res.status(200).json({ok:true});}catch{return res.status(503).json({error:'Sign-out unavailable'});}}
