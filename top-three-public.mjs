@@ -10,7 +10,7 @@ async function refresh() {
   busy=true;
   try {
     const fields='sport,category,pick_team,opponent,bet_type,odds,game_date,status';
-    const response=await fetch(`${config.url}/rest/v1/tfi_public_picks?select=${fields}&order=game_date.desc&limit=60`,{headers:{apikey:config.key},cache:'no-store',signal:AbortSignal.timeout(10000)});
+    const response=await fetch(`${config.url}/rest/v1/tfi_public_feed?select=${fields}&order=game_date.desc&limit=60`,{headers:{apikey:config.key},cache:'no-store',signal:AbortSignal.timeout(10000)});
     if(!response.ok)throw new Error('Public feed unavailable');
     const card=latestCard(await response.json());
     if(!card)throw new Error('No public card');
