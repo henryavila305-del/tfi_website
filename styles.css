@@ -7,3 +7,6 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
 .team-badge{background:transparent!important;box-shadow:none!important;border:none!important;border-radius:0}.team-badge img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 4px #000)}
+
+/* Original user-supplied TFI artwork, preserved without redrawing. */
+.original-logo{display:block!important;width:112px;height:68px;overflow:hidden;position:relative;border:0!important;padding:0!important;flex:none}.original-logo img{position:absolute;width:112px;height:112px;max-width:none;left:0;top:-22px;object-fit:contain}.original-banner{margin:0 0 26px;width:100%;max-width:560px}.original-banner img{display:block;width:100%;height:auto;mix-blend-mode:screen}.header .brand>span.original-logo+span{margin-left:0}.hero-copy>.eyebrow{margin-bottom:15px}.hero h1{font-size:clamp(65px,6.2vw,96px)}@media(max-width:720px){.original-logo{width:92px;height:58px}.original-logo img{width:92px;height:92px;top:-18px}.original-banner{margin:0 0 24px}.hero h1{font-size:clamp(63px,13.7vw,92px)}}
