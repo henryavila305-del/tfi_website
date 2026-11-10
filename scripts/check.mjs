@@ -24,9 +24,10 @@ for (const id of ['picks', 'results', 'sports', 'premium', 'about']) {
   assert(html.includes(`<section id="${id}" tabindex="-1"`), `${id} can receive menu focus`);
 }
 assert.match(html, /id="sport-detail" role="region" aria-labelledby="sport-title"/);
-assert.match(html, /No free picks published yet/);
+assert.match(html, /NEXT CARD STARTS HERE/);
 assert.match(html, /PUBLIC PICKS \/ HISTORICAL RESULTS/, 'Preview status must be visible in the hero');
-assert.match(html, /Illustration only · not performance data/, 'Concept artwork must not imply a performance record');
+assert.match(html, /historical selections, not current picks/, 'Completed hero card is clearly dated');
+assert.equal((html.match(/class="ranked-pick /g)||[]).length,3,'Three historical ranked selections');
 
 const whopUrls = [
   'https://whop.com/x-63cc/tfi-all-access/',
@@ -54,4 +55,5 @@ assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(|\.sendBeacon\s*\(
 assert(!/<(?:iframe|form)\b/i.test(html), 'No embedded services or collection forms in this preview');
 execFileSync(process.execPath, ['--check', 'app.js']);
 console.log(`Passed: ${ids.length} unique anchors, local assets, honest content states, no external integration, JavaScript syntax.`);
+
 
