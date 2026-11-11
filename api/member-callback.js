@@ -18,4 +18,4 @@ export default async function handler(req,res){headers(res);if(req.method!=='GET
  if(!/^user_[a-zA-Z0-9]+$/.test(user.sub||'')||user.sub!==claims.sub)throw Error('Invalid user');
  stage='session_save';
  const member=await session(req,res,cfg);member.userId=user.sub;member.signedInAt=Date.now();await member.save();return res.redirect(302,'/members.html');
- }catch(error){console.error('TFI member callback failed', {stage, upstreamStatus:Number.isInteger(error?.upstreamStatus)?error.upstreamStatus:null});return res.redirect(302,'/members.html?signin=failed&step='+stage);}}
+ }catch(error){console.error('TFI member callback failed', {stage, upstreamStatus:Number.isInteger(error?.upstreamStatus)?error.upstreamStatus:null, upstreamCode:error?.upstreamCode||'unclassified'});return res.redirect(302,'/members.html?signin=failed&step='+stage);}}
