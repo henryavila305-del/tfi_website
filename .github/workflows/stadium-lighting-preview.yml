@@ -1,0 +1,40 @@
+name: Stadium Lighting Browser Screenshots
+on:
+  pull_request:
+    paths:
+      - 'stadium-lighting.css'
+      - 'index.html'
+      - 'scripts/build.mjs'
+      - 'scripts/serve.mjs'
+      - '.github/workflows/stadium-lighting-preview.yml'
+  workflow_dispatch:
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check && npm run build:check
+      - name: Install browser for visual evidence
+        run: npx --yes playwright@1.56.1 install --with-deps chromium
+      - name: Start isolated local preview
+        run: node scripts/serve.mjs > /tmp/tfi-serve.log 2>&1 &
+      - name: Wait for local server and CSS
+        run: |
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/stadium-lighting.css -o /dev/null && break; sleep 1; done
+          curl -fsS http://127.0.0.1:4173/stadium-lighting.css -o /dev/null
+      - name: Capture desktop
+        run: npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size="1440,900" --full-page --wait-for-timeout=1800 http://127.0.0.1:4173/ desktop-1440.png
+      - name: Capture mobile
+        run: npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size="390,844" --full-page --wait-for-timeout=1800 http://127.0.0.1:4173/ mobile-390.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stadium-lighting-phase2-screenshots
+          path: |
+            desktop-1440.png
+            mobile-390.png
+          retention-days: 14
