@@ -1,5 +1,5 @@
 // Isolated daily-card domain model. No network, database, or production writes.
-export const CATEGORIES = ['Top 3 #3','Top 3 #2','Top 3 #1','Main Premium','NBA Premium','NHL Premium','NFL Premium','NCAAF Premium'];
+export const CATEGORIES = ['Top 3 #3','Top 3 #2','Top 3 #1','Main Premium','NBA Premium','NHL Premium','NFL Premium','NCAAB Premium','NCAAF Premium'];
 const premium = category => category.includes('Premium');
 const assert = (ok, message) => { if (!ok) throw new Error(message); };
 const normalized = value => String(value).trim().toLowerCase().replace(/\s+/g,' ');

@@ -3,9 +3,10 @@
 const PUBLIC_KEYS=['Top 3','Premium / Max Bet','Dog of the Day','Play of the Day'];
 const isCount=n=>Number.isSafeInteger(n)&&n>=0;
 export function safePublicRecordSnapshot(snapshot) {
-  if(!snapshot || snapshot.audited!==true || !snapshot.records || !snapshot.baselineReconciled) {
+  if(!snapshot || snapshot.audited!==true || !snapshot.records || snapshot.baselineReconciled!==true) {
     throw new Error('Unaudited records: keep historical website unchanged');
   }
+  if(typeof snapshot.throughDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(snapshot.throughDate)||Number.isNaN(Date.parse(snapshot.throughDate+'T00:00:00Z'))||new Date(snapshot.throughDate+'T00:00:00Z').toISOString().slice(0,10)!==snapshot.throughDate||snapshot.throughDate<'2026-11-08') throw new Error('Invalid snapshot date');
   const result={};
   for(const name of PUBLIC_KEYS){
     const r=snapshot.records[name];

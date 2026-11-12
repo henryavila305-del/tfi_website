@@ -4,7 +4,7 @@ import { PREMIUM_CATEGORIES } from './records-phase2.mjs';
 const statuses=new Set(['win','loss','push','pending']);
 const summary=rows=>({wins:rows.filter(x=>x.status==='win').length,losses:rows.filter(x=>x.status==='loss').length,pushes:rows.filter(x=>x.status==='push').length,pending:rows.filter(x=>x.status==='pending').length});
 const fail=m=>{throw new Error(m)};
-const normalize=x=>String(x??'').trim().toLowerCase().replace(/\\s+/g,' ');
+const normalize=x=>String(x??'').trim().toLowerCase().replace(/\s+/g,' ');
 export function reconcileRecords({historical,tracker,overlapIds,verifiedBaseline=false}) {
   if(!verifiedBaseline) fail('Historical baseline not audited; publication blocked');
   if(!Array.isArray(historical)||!Array.isArray(tracker)||!Array.isArray(overlapIds)) fail('Missing reconciliation inputs');

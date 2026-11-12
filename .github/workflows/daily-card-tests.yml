@@ -3,12 +3,16 @@ on:
   pull_request:
     paths:
       - 'daily-card/**'
+      - 'records.js'
+      - 'scripts/**'
       - '.github/workflows/daily-card-tests.yml'
   push:
     branches:
       - feature/daily-card-integration-phase1
     paths:
       - 'daily-card/**'
+      - 'records.js'
+      - 'scripts/**'
       - '.github/workflows/daily-card-tests.yml'
 jobs:
   daily-card:
@@ -30,3 +34,5 @@ jobs:
         run: node daily-card/public-record-adapter.test.mjs
       - name: Audit-gated aggregate generation tests
         run: node daily-card/generate-aggregate.test.mjs
+      - name: Record regression tests
+        run: node daily-card/record-regressions.test.mjs

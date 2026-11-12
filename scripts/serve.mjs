@@ -1,7 +1,7 @@
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.mjs':'text/javascript', '.webp':'image/webp' };
-const files = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/favicon.svg': 'favicon.svg', '/records.js': 'records.js', '/post-admin.html':'post-admin.html', '/post-admin.mjs':'post-admin.mjs', '/spotlight-core.mjs':'spotlight-core.mjs', '/spotlight-public.mjs':'spotlight-public.mjs', '/spotlight-config.mjs':'spotlight-config.mjs', '/tfi-banner.webp':'tfi-banner.webp', '/tfi-logo.webp':'tfi-logo.webp', '/cashed-spotlight.webp':'cashed-spotlight.webp', '/review.html':'review.html' };
+const files = { '/daily-card/public-record-adapter.mjs':'daily-card/public-record-adapter.mjs', '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/favicon.svg': 'favicon.svg', '/records.js': 'records.js', '/post-admin.html':'post-admin.html', '/post-admin.mjs':'post-admin.mjs', '/spotlight-core.mjs':'spotlight-core.mjs', '/spotlight-public.mjs':'spotlight-public.mjs', '/spotlight-config.mjs':'spotlight-config.mjs', '/tfi-banner.webp':'tfi-banner.webp', '/tfi-logo.webp':'tfi-logo.webp', '/cashed-spotlight.webp':'cashed-spotlight.webp', '/review.html':'review.html' };
 http.createServer(async (req, res) => {
   const file = files[new URL(req.url, 'http://localhost').pathname];
   if (!file) { res.writeHead(404); res.end('Not found'); return; }
