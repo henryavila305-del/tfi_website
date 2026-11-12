@@ -1,0 +1,83 @@
+/* TFI Stadium Lighting Phase 2 — CSS-only atmospheric enhancement.
+   Existing floodlit banner stays intact. All lighting layers are decorative. */
+.hero.brand-opening{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 50% 82%,#15200b 0%,#090c09 56%,#050705 100%);
+}
+.hero.brand-opening .brand-stage{position:relative;z-index:1}
+.hero.brand-opening .opening-bar{position:relative;z-index:4}
+.hero.brand-opening::before,.hero.brand-opening::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  top:0;
+  width:42%;
+  height:84%;
+  pointer-events:none;
+  opacity:.58;
+  mix-blend-mode:screen;
+  filter:blur(1px);
+}
+.hero.brand-opening::before{
+  left:-5%;
+  background:
+    radial-gradient(ellipse at 20% 18%,rgba(242,255,210,.83) 0%,rgba(178,255,0,.43) 1.6%,transparent 6.5%),
+    conic-gradient(from 109deg at 20% 18%,transparent 0deg,rgba(173,255,0,.15) 10deg,transparent 27deg,rgba(173,255,0,.08) 40deg,transparent 60deg);
+}
+.hero.brand-opening::after{
+  right:-5%;
+  background:
+    radial-gradient(ellipse at 80% 18%,rgba(242,255,210,.83) 0%,rgba(178,255,0,.43) 1.6%,transparent 6.5%),
+    conic-gradient(from 225deg at 80% 18%,transparent 0deg,rgba(173,255,0,.15) 10deg,transparent 27deg,rgba(173,255,0,.08) 40deg,transparent 60deg);
+}
+.hero.brand-opening .brand-stage::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent 56%,rgba(128,255,0,.055) 84%,transparent);
+}
+#results{position:relative;isolation:isolate}
+#results::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%,rgba(169,255,0,.065),transparent 56%);
+}
+#results .record-panel{
+  box-shadow:0 0 0 1px rgba(177,255,0,.12),0 20px 55px rgba(0,0,0,.24);
+}
+#results .record-numbers strong{text-shadow:0 0 16px rgba(169,255,0,.1)}
+@media(max-width:640px){
+  .hero.brand-opening::before,.hero.brand-opening::after{width:58%;height:65%;opacity:.34}
+  .hero.brand-opening::before{left:-21%}
+  .hero.brand-opening::after{right:-21%}
+  #results .record-panel{box-shadow:0 0 0 1px rgba(177,255,0,.08)}
+}
+@media(prefers-reduced-transparency:reduce){
+  .hero.brand-opening::before,.hero.brand-opening::after{opacity:.25;mix-blend-mode:normal}
+}
+@media(forced-colors:active){
+  .hero.brand-opening::before,.hero.brand-opening::after,#results::before{display:none}
+  #results .record-panel{box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero.brand-opening::before,.hero.brand-opening::after{animation:none;transition:none}
+}
+
+/* Phase 4 screenshot review: retain the banner's own floodlights, add subtle depth below. */
+.hero.brand-opening .opening-bar{
+  background:linear-gradient(100deg,rgba(123,185,0,.055),rgba(0,0,0,0) 48%,rgba(123,185,0,.045));
+  border-bottom:1px solid rgba(171,255,0,.09);
+}
+#results .record-panel{
+  background-image:linear-gradient(145deg,rgba(166,255,0,.025),transparent 54%);
+}
+@media(max-width:640px){
+  .hero.brand-opening .opening-bar{background:linear-gradient(180deg,rgba(118,180,0,.035),transparent)}
+  #results .record-panel{background-image:none}
+}
