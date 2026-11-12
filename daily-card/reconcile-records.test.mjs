@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {reconcileRecords,reconcileHistoricalBaseline} from './reconcile-records.mjs';
+const item=(id,category,status,extra={})=>({id,category,status,...extra});
+const historical=[item('h1','Main Premium','win'),item('h2','Main Premium','loss'),item('h3','Top 3 #1','win')];
+const tracker=[item('h2','Main Premium','loss'),item('t1','NCAAB Premium','win',{featuredPlayOfDay:true}),item('t2','NBA Premium','loss'),item('t3','Main Premium','loss')];
+assert.throws(()=>reconcileRecords({historical,tracker,overlapIds:['h2']}),/not audited/);
+const result=reconcileRecords({historical,tracker,overlapIds:['h2'],verifiedBaseline:true});
+assert.deepEqual(result.publicRecord['Premium / Max Bet'],{wins:1,losses:2,pushes:0,pending:0});
+assert.deepEqual(result.publicRecord['Play of the Day'],{wins:1,losses:0,pushes:0,pending:0});
+assert.equal(result.internalPremiumRecords['NBA Premium'].losses,1);
+assert(!JSON.stringify(result.publicRecord).includes('NCAAB Premium'));
+assert(!JSON.stringify(result.publicRecord).includes('t1'));
+assert.throws(()=>reconcileRecords({historical,tracker,overlapIds:[],verifiedBaseline:true}),/Duplicate record ID/);
+assert.throws(()=>reconcileHistoricalBaseline({baseline:{wins:64,losses:32},additions:[]}),/not audited/);
+assert.throws(()=>reconcileHistoricalBaseline({baseline:{wins:64,losses:32},additions:[item('t3','Main Premium','loss')],verifiedBaseline:true}),/overlap unverified/);
+assert.deepEqual(reconcileHistoricalBaseline({baseline:{wins:64,losses:32},additions:[item('t3','Main Premium','loss',{verifiedNotInBaseline:true})],verifiedBaseline:true}),{wins:64,losses:33,pushes:0,pending:0});
+console.log('PASS: historical reconciliation gates, Main-only Premium, Play of the Day, duplicate rejection and private category protection');

@@ -4,10 +4,12 @@ import { execFileSync } from 'node:child_process';
 
 execFileSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
 const expected = ['app.js', 'favicon.svg', 'index.html', 'records.js', 'review.html', 'tfi-banner.webp', 'tfi-logo.webp', 'cashed-spotlight.webp', 'post-admin.html', 'post-admin.mjs', 'spotlight-core.mjs', 'spotlight-config.mjs', 'spotlight-public.mjs', 'top-three-core.mjs', 'top-three-public.mjs', 'live-score-core.mjs', 'live-scores.mjs', 'styles.css'];
-assert.deepEqual((await readdir('dist')).sort(), [...expected].sort(), 'Output must contain only the public static assets');
+assert.deepEqual((await readdir('dist')).sort(), [...expected,'daily-card'].sort(), 'Output must contain only the public static assets');
 for (const asset of expected) {
   assert.deepEqual(await readFile(`dist/${asset}`), await readFile(asset), `Built ${asset} must match the reviewed source`);
 }
+assert.deepEqual(await readdir('dist/daily-card'), ['public-record-adapter.mjs']);
+assert.deepEqual(await readFile('dist/daily-card/public-record-adapter.mjs'), await readFile('daily-card/public-record-adapter.mjs'));
 // Check a second build too: repeated builds must preserve the same public output.
 execFileSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
 for (const asset of expected) {

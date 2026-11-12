@@ -1,0 +1,38 @@
+name: Daily Card Isolation Tests
+on:
+  pull_request:
+    paths:
+      - 'daily-card/**'
+      - 'records.js'
+      - 'scripts/**'
+      - '.github/workflows/daily-card-tests.yml'
+  push:
+    branches:
+      - feature/daily-card-integration-phase1
+    paths:
+      - 'daily-card/**'
+      - 'records.js'
+      - 'scripts/**'
+      - '.github/workflows/daily-card-tests.yml'
+jobs:
+  daily-card:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Historical model tests
+        run: node daily-card/model.test.mjs
+      - name: Category and privacy tests
+        run: node daily-card/records-phase2.test.mjs
+      - name: Reconciliation tests
+        run: node daily-card/reconcile-records.test.mjs
+      - name: Read-only public adapter tests
+        run: node daily-card/public-record-adapter.test.mjs
+      - name: Audit-gated aggregate generation tests
+        run: node daily-card/generate-aggregate.test.mjs
+      - name: Record regression tests
+        run: node daily-card/record-regressions.test.mjs
