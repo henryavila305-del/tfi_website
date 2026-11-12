@@ -1,0 +1,14 @@
+/* TFI stadium-lighting Phase 1: decorative-only layer, no content changes. */
+.hero.brand-opening{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 80%,#14200a 0%,#090c09 54%,#050705 100%)}
+.hero.brand-opening::before,.hero.brand-opening::after{content:"";position:absolute;z-index:0;top:0;width:46%;height:100%;pointer-events:none;opacity:.75;mix-blend-mode:screen}
+.hero.brand-opening::before{left:-7%;background:radial-gradient(ellipse at 20% 21%,rgba(218,255,173,.8) 0%,rgba(171,255,0,.34) 2.5%,transparent 8%),conic-gradient(from 113deg at 20% 21%,transparent 0deg,rgba(172,255,0,.14) 11deg,transparent 30deg,rgba(172,255,0,.07) 44deg,transparent 68deg);filter:blur(2px)}
+.hero.brand-opening::after{right:-7%;background:radial-gradient(ellipse at 80% 21%,rgba(218,255,173,.8) 0%,rgba(171,255,0,.34) 2.5%,transparent 8%),conic-gradient(from 225deg at 80% 21%,transparent 0deg,rgba(172,255,0,.14) 11deg,transparent 30deg,rgba(172,255,0,.07) 44deg,transparent 68deg);filter:blur(2px)}
+.hero.brand-opening .brand-stage{position:relative;z-index:1}
+.hero.brand-opening .brand-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 50%,rgba(133,255,0,.055) 78%,transparent 100%)}
+.hero.brand-opening .opening-bar{position:relative;z-index:2}
+#record{position:relative;isolation:isolate}
+#record::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(169,255,0,.07),transparent 57%)}
+#record .record-panel{box-shadow:0 0 0 1px rgba(177,255,0,.12),0 20px 55px rgba(0,0,0,.24)}
+#record .record-numbers strong{text-shadow:0 0 22px rgba(169,255,0,.13)}
+@media(max-width:640px){.hero.brand-opening::before,.hero.brand-opening::after{width:58%;opacity:.43}.hero.brand-opening::before{left:-20%}.hero.brand-opening::after{right:-20%}#record .record-panel{box-shadow:0 0 0 1px rgba(177,255,0,.08)}}
+@media(prefers-reduced-motion:reduce){.hero.brand-opening::before,.hero.brand-opening::after{animation:none;transition:none}}
