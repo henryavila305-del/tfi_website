@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const html = await readFile('index.html', 'utf8');
 const expected = [
   { name:'Top 3', w:149, l:108, p:0 },
-  { name:'Premium / Max Bet', w:64, l:32, p:0 },
+  { name:'Premium / Max Bet', w:66, l:32, p:0 },
   { name:'Dog of the Day', w:35, l:23, p:0 },
   { name:'Play of the Day', w:24, l:31, p:2 }
 ];
