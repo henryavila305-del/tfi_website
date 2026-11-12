@@ -1,1 +1,53 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>TFI | Members Live Board</title><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./members.css"><script type="module" src="./members.mjs"></script></head><body><header class="wrap header"><a class="brand" href="./index.html"><img src="./tfi-logo.webp" width="80" height="60" alt="TFI"><span>THE FAVORITE<br>INDEX.</span></a><a href="./index.html#picks">FREE TOP 3 ↗</a></header><main class="wrap section"><p class="eyebrow">INSIDE THE INDEX</p><h1>THE MEMBERS<br><em>LIVE BOARD.</em></h1><p class="member-intro">Your Premium picks. The score as it unfolds. Every final result.</p><div class="member-toolbar"><span id="member-tier" class="status">MEMBERS ACCESS</span><button id="member-refresh" class="button outline" hidden>REFRESH</button><button id="member-logout" class="button outline" hidden>SIGN OUT</button></div><section id="member-gate" class="member-gate"><h2>YOUR MEMBERSHIP. YOUR BOARD.</h2><p id="member-message" role="status">Checking member access…</p><a class="button" href="/api/member-login">SIGN IN WITH WHOP ↗</a><p>Use the Whop account connected to your existing TFI membership.</p><div class="member-plans"><article><h3>TFI PREMIUM</h3><p>Main Premium / Max Bet picks and their live game status.</p><a href="https://whop.com/x-63cc/tfi-premium/" target="_blank" rel="noopener noreferrer">Explore Premium ↗</a></article><article><h3>TFI ALL ACCESS</h3><p>Main Premium plus NBA, NHL, NFL, college football and men’s college basketball Premium picks.</p><a href="https://whop.com/x-63cc/tfi-all-access/" target="_blank" rel="noopener noreferrer">Explore All Access ↗</a></article></div></section><section id="member-board" hidden aria-label="Your authorized Premium picks"><label for="member-category">View picks</label><select id="member-category"><option value="all">All included categories</option></select><div id="member-cards" class="member-cards"></div><p id="member-empty" hidden>No published picks in this view yet.</p><p class="note">Scores refresh every 30 seconds while open. Final grading is separate. Odds shown are the posted odds, not a live betting price.</p></section><p class="note">Trust the Index. No guaranteed outcomes.</p></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>TFI | Members Live Board</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./members.css">
+  <script type="module" src="./members.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#member-main">Skip to member board</a>
+  <header class="wrap header">
+    <a class="brand" href="./index.html"><img src="./tfi-logo.webp" width="80" height="60" alt="TFI"><span>THE FAVORITE<br>INDEX.</span></a>
+    <nav aria-label="Member navigation"><a href="./index.html#picks">FREE TOP 3 ↗</a></nav>
+  </header>
+  <main id="member-main" class="wrap section" tabindex="-1">
+    <p class="eyebrow">INSIDE THE INDEX</p>
+    <h1>THE MEMBERS<br><em>LIVE BOARD.</em></h1>
+    <p class="member-intro">Your Premium picks. The score as it unfolds. Every final result.</p>
+    <p id="member-notice" class="note" role="status"></p>
+    <div class="member-toolbar">
+      <span id="member-tier" class="status">MEMBERS ACCESS</span>
+      <button id="member-refresh" class="button outline" hidden>CHECK ACCESS</button>
+      <button id="member-logout" class="button outline" hidden>SIGN OUT</button>
+      <span id="member-updated" class="note" role="status"></span>
+    </div>
+    <section id="member-gate" class="member-gate" aria-labelledby="gate-title">
+      <h2 id="gate-title">YOUR MEMBERSHIP. YOUR BOARD.</h2>
+      <p id="member-message" role="status">Checking member access.</p>
+      <a class="button" href="/api/member-login">SIGN IN WITH WHOP ↗</a>
+      <p>Use the Whop account connected to your existing TFI membership. Whop handles sign-in; no separate TFI password is needed.</p>
+      <p><a href="https://whop.com/orders/" target="_blank" rel="noopener noreferrer">Manage your membership on Whop ↗</a></p>
+      <noscript><p>Enable JavaScript to check your membership and load your board.</p></noscript>
+      <div class="member-plans">
+        <article><h3>TFI PREMIUM</h3><p>Main Premium / Max Bet picks and their live game status.</p><a href="https://whop.com/x-63cc/tfi-premium/" target="_blank" rel="noopener noreferrer">Explore Premium ↗</a></article>
+        <article><h3>TFI ALL ACCESS</h3><p>Main Premium plus NBA, NHL, NFL, college football and men’s college basketball Premium picks.</p><a href="https://whop.com/x-63cc/tfi-all-access/" target="_blank" rel="noopener noreferrer">Explore All Access ↗</a></article>
+      </div>
+    </section>
+    <section id="member-board" hidden aria-label="Your authorized Premium picks">
+      <label for="member-category">View picks</label>
+      <select id="member-category"><option value="all">All included categories</option></select>
+      <div id="member-cards" class="member-cards"></div>
+      <p id="member-empty" hidden>No published picks in this view yet.</p>
+      <p class="note">Scores and membership access refresh every 30 seconds while open. Final grading is separate. Odds shown are the posted odds, not a live betting price.</p>
+    </section>
+    <p class="note">Trust the Index. No guaranteed outcomes.</p>
+  </main>
+</body>
+</html>
+

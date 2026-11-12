@@ -15,10 +15,10 @@ let result=await memberData('user_test',{products,checkAccess:async(_,id)=>id===
 result=await memberData('user_test',{products,checkAccess:async()=>true,readPicks:async()=>rows});assert.deepEqual(result.body.picks.map(p=>p.id),['one','two']);assert.equal(result.body.tier,'All Access');
 assert.deepEqual(allowedCategories({premium:'true',all_access:1}),[]);
 await assert.rejects(()=>memberData('user_test',{...deps,checkAccess:async()=>{throw Error('upstream');}}));
-let res=response();await login({method:'GET',headers:{}},res);assert.equal(res.statusCode,503);
+let res=response();await login({method:'GET',headers:{}},res);assert.equal(res.statusCode,302);assert.equal(res.location,'/members.html?signin=unavailable');
 Object.assign(process.env,{WHOP_MEMBERS_ENABLED:'true',WHOP_CLIENT_ID:'app_test',WHOP_CLIENT_SECRET:'synthetic',WHOP_COMPANY_API_KEY:'synthetic',MEMBER_SESSION_SECRET:'synthetic-test-password-at-least-32-characters',MEMBER_APP_URL:'https://preview.example.test',WHOP_PREMIUM_PRODUCT_ID:products.premium,WHOP_ALL_ACCESS_PRODUCT_ID:products.all_access});
 res=response();await login({method:'GET',headers:{}},res);assert.equal(res.statusCode,302);const url=new URL(res.location);assert.equal(url.searchParams.get('code_challenge_method'),'S256');assert(url.searchParams.get('nonce'));assert.match(String(res.headers['set-cookie']),/HttpOnly/);assert.match(String(res.headers['set-cookie']),/Secure/);
-res=response();await callback({method:'GET',headers:{},query:{code:'fake',state:'forged'}},res);assert.equal(res.statusCode,400);
+res=response();await callback({method:'GET',headers:{},query:{code:'fake',state:'forged'}},res);assert.equal(res.statusCode,302);assert.equal(res.location,'/members.html?signin=expired');
 res=response();await picks({method:'GET',headers:{},query:{tier:'all_access',userId:'user_test'}},res);assert.equal(res.statusCode,401);assert.equal(res.headers['cache-control'],'private, no-store');assert(!JSON.stringify(res.body).includes('synthetic main'));
 res=response();await logout({method:'POST',headers:{origin:'https://evil.example'}},res);assert.equal(res.statusCode,403);
 console.log('Passed: anonymous/expired/denied gates, tier boundaries, private payload filtering, no-store, PKCE cookies, forged callback and logout CSRF rejection.');
@@ -32,3 +32,4 @@ const failure=response();await callback({method:'GET',headers:{cookie:flowCookie
 assert.equal(failure.location,'/members.html?signin=failed&step=token_exchange');assert.equal(diagnostic.upstreamStatus,503);assert(!JSON.stringify(diagnostic).includes('synthetic-private-code'));
 }finally{globalThis.fetch=originalFetch;console.error=originalError;}
 console.log('Passed callback stage diagnostics without codes, tokens or secrets.');
+

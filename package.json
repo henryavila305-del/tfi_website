@@ -7,7 +7,7 @@
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "build:check": "node scripts/check-build.mjs",
-    "check": "node scripts/check.mjs && node scripts/check-interactions.mjs && node scripts/check-records.mjs && node scripts/check-spotlight.mjs && node scripts/check-top-three.mjs && node scripts/check-live-scores.mjs && node scripts/check-members.mjs"
+    "check": "node scripts/check.mjs && node scripts/check-interactions.mjs && node scripts/check-records.mjs && node scripts/check-spotlight.mjs && node scripts/check-top-three.mjs && node scripts/check-live-scores.mjs && node scripts/check-members.mjs && node --test scripts/member-auth.test.mjs scripts/member-ui.test.mjs"
   },
   "engines": {
     "node": ">=22"
@@ -17,3 +17,4 @@
     "iron-session": "8.0.4"
   }
 }
+
