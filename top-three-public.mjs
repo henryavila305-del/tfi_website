@@ -4,7 +4,7 @@ import {latestCard,cardSummary} from './top-three-core.mjs';
 const board=document.querySelector('.completed-board');
 const templates=[...board.querySelectorAll('.ranked-pick')].map(p=>p.cloneNode(true));
 const check=templates[0].querySelector('.result-pill svg').cloneNode(true);
-const logos={'Dallas Mavericks':['nba','dal'],'New York Islanders':['nhl','nyi'],'Buffalo Bills':['nfl','buf'],'Denver Broncos':['nfl','den'],'New York Giants':['nfl','nyg'],'Boston Bruins':['nhl','bos'],'Minnesota Wild':['nhl','min'],'Oklahoma City Thunder':['nba','okc'],'Colorado Avalanche':['nhl','col']};
+const logos={'Memphis Grizzlies':['nba','mem'],'Utah Utes':['ncaa','254'],'Edmonton Oilers':['nhl','edm'],'Dallas Mavericks':['nba','dal'],'New York Islanders':['nhl','nyi'],'Buffalo Bills':['nfl','buf'],'Denver Broncos':['nfl','den'],'New York Giants':['nfl','nyg'],'Boston Bruins':['nhl','bos'],'Minnesota Wild':['nhl','min'],'Oklahoma City Thunder':['nba','okc'],'Colorado Avalanche':['nhl','col']};
 let busy=false;
 async function refresh() {
   if(busy || document.hidden)return;
