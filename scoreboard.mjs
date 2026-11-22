@@ -17,7 +17,13 @@ const league = document.querySelector('#scoreboard-league');
 const status = document.querySelector('#scoreboard-status');
 const board = document.querySelector('#scoreboard-games');
 const feeds = new Map();
+const broadcast = new URLSearchParams(location.search).get('view') === 'broadcast';
+const gamesPerPage = 6;
+let broadcastPage = 0;
+let broadcastPageCount = 1;
+let broadcastState = '';
 let refreshing = false;
+if (broadcast) document.body.classList.add('score-broadcast');
 
 for (const sport of leagues) league.add(new Option(sport, sport));
 league.disabled = false;
@@ -37,11 +43,15 @@ function gameCard(sport, game, state) {
   const detail = gameStatus?.type?.shortDetail || gameStatus?.type?.description || gameStatus?.displayClock;
   const start = displayTime.format(new Date(game.date)) + ' CT';
   const scheduled = state === 'pre';
-  card.append(element('p', sport + ' · ' + (scheduled ? start : detail || start)));
+  const header = element('div', '', 'score-game-status');
+  header.append(element('b', sport), element('span', scheduled ? start : detail || start));
+  card.append(header);
   const teams = game.competitions[0].competitors;
   for (const team of [...teams].sort((a, b) => Number(a.homeAway === 'home') - Number(b.homeAway === 'home'))) {
     const row = element('div', '', 'scoreboard-team');
-    row.append(element('span', team.team?.displayName || team.team?.name || 'Team TBD'));
+    const tag = element('span', team.team?.abbreviation || (team.homeAway === 'home' ? 'HOME' : 'AWAY'), 'score-team-tag');
+    tag.setAttribute('aria-hidden', 'true');
+    row.append(tag, element('span', team.team?.displayName || team.team?.name || 'Team TBD', 'score-team-name'));
     if (state !== 'pre' && /^\d+$/.test(String(team.score))) row.append(element('strong', String(team.score)));
     card.append(row);
   }
@@ -77,15 +87,36 @@ function render() {
     }
   }
 
+  const allGames = [...games.values()];
+  const groups = sections.map(([state, label]) => ({
+    state, label,
+    matches: allGames.filter(game => game.state === state)
+      .sort((a, b) => Date.parse(a.game.date) - Date.parse(b.game.date)),
+  }));
+  let visibleGroups = groups.filter(group => group.matches.length || group.state === 'in');
+  if (broadcast) {
+    const mode = groups[0].matches.length ? 'live' : 'schedule';
+    if (mode !== broadcastState) {
+      broadcastState = mode;
+      broadcastPage = 0;
+    }
+    const activeGroups = mode === 'live' ? [groups[0]] : groups.filter(group => group.matches.length);
+    const pages = activeGroups.flatMap(group =>
+      Array.from({ length: Math.ceil(group.matches.length / gamesPerPage) }, (_, page) => ({
+        ...group,
+        matches: group.matches.slice(page * gamesPerPage, (page + 1) * gamesPerPage),
+      })));
+    broadcastPageCount = Math.max(1, pages.length);
+    broadcastPage %= broadcastPageCount;
+    visibleGroups = [pages[broadcastPage] ?? groups[0]];
+  }
   const fragment = document.createDocumentFragment();
-  for (const [state, label] of sections) {
-    const matches = [...games.values()].filter(game => game.state === state);
-    if (!matches.length && state !== 'in') continue;
+  for (const { state, label, matches } of visibleGroups) {
     const section = element('section', '', 'scoreboard-group');
-    section.append(element('h2', label));
+    const pageLabel = broadcast && broadcastPageCount > 1 ? ' · ' + (broadcastPage + 1) + ' / ' + broadcastPageCount : '';
+    section.append(element('h2', label + pageLabel));
     if (matches.length) {
       const list = element('ul', '', 'scoreboard-grid');
-      matches.sort((a, b) => Date.parse(a.game.date) - Date.parse(b.game.date));
       for (const { sport, game } of matches) list.append(gameCard(sport, game, state));
       section.append(list);
     } else {
@@ -135,4 +166,11 @@ async function refresh() {
 
 refresh();
 setInterval(refresh, 10000);
+if (broadcast) {
+  setInterval(() => {
+    if (document.hidden || broadcastPageCount < 2) return;
+    broadcastPage = (broadcastPage + 1) % broadcastPageCount;
+    render();
+  }, 12000);
+}
 document.addEventListener('visibilitychange', refresh);
