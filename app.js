@@ -20,8 +20,9 @@ toggle.addEventListener('click', () => {
 });
 navigation.addEventListener('click', event => {
   const link = event.target.closest('a');
-  if (link && mobile.matches) {
-    const destination = document.querySelector(link.getAttribute('href'));
+  const href = link?.getAttribute('href');
+  if (href?.startsWith('#') && mobile.matches) {
+    const destination = document.querySelector(href);
     destination?.focus({ preventScroll: true });
     syncMenu();
   }

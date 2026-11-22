@@ -11,5 +11,13 @@ const response=()=>({headers:{},setHeader(k,v){this.headers[k]=v;},status(n){thi
 let r=response();await handler({method:'GET',query:{sport:'https://evil.test',date:'2026-11-10'}},r);assert.equal(r.code,400);
 r=response();await handler({method:'POST',query:{}},r);assert.equal(r.code,405);
 const old=globalThis.fetch;globalThis.fetch=async()=>({ok:true,json:async()=>({events:[e]})});r=response();await handler({method:'GET',query:{sport:'NHL',date:'2026-11-10'}},r);assert.equal(r.code,200);assert.equal(r.body.events[0].competitions[0].competitors[0].score,'2');
+let requestedUrl;
+globalThis.fetch=async url=>{requestedUrl=new URL(url);return {ok:true,json:async()=>({events:[]})};};
+for(const [sport,group] of [['NCAAB','50'],['NCAAF','80'],['NBA',null]]){
+ r=response();await handler({method:'GET',query:{sport,date:'2026-11-10',coverage:'full'}},r);
+ assert.equal(r.code,200);assert.equal(requestedUrl.searchParams.get('groups'),group);
+}
+r=response();await handler({method:'GET',query:{sport:'NCAAB',date:'2026-11-10'}},r);
+assert.equal(requestedUrl.searchParams.has('groups'),false);
 globalThis.fetch=async()=>{throw Error('offline');};r=response();await handler({method:'GET',query:{sport:'NHL',date:'2026-11-10'}},r);assert.equal(r.code,503);globalThis.fetch=old;
 console.log('Passed live, pregame, final, ambiguous and mismatched events; endpoint validation and upstream failure.');
