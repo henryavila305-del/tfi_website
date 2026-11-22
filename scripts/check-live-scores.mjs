@@ -16,8 +16,10 @@ globalThis.fetch=async url=>{requestedUrl=new URL(url);return {ok:true,json:asyn
 for(const [sport,group] of [['NCAAB','50'],['NCAAF','80'],['NBA',null]]){
  r=response();await handler({method:'GET',query:{sport,date:'2026-11-10',coverage:'full'}},r);
  assert.equal(r.code,200);assert.equal(requestedUrl.searchParams.get('groups'),group);
+ assert.equal(r.headers['Cache-Control'],'public, s-maxage=5, stale-while-revalidate=3');
 }
 r=response();await handler({method:'GET',query:{sport:'NCAAB',date:'2026-11-10'}},r);
 assert.equal(requestedUrl.searchParams.has('groups'),false);
+assert.equal(r.headers['Cache-Control'],'public, s-maxage=15, stale-while-revalidate=15');
 globalThis.fetch=async()=>{throw Error('offline');};r=response();await handler({method:'GET',query:{sport:'NHL',date:'2026-11-10'}},r);assert.equal(r.code,503);globalThis.fetch=old;
 console.log('Passed live, pregame, final, ambiguous and mismatched events; endpoint validation and upstream failure.');
