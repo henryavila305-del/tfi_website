@@ -9,13 +9,27 @@
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./scoreboard.mjs"></script>
   <style>
-    .score-page { background: #090c09; color: #f4f7f0; }
+    .score-page { position: relative; isolation: isolate; min-height: 100vh; background: #090c09; color: #f4f7f0; }
+    .score-page::before {
+      content: ''; position: fixed; inset: -16px; z-index: -1; pointer-events: none;
+      background:
+        linear-gradient(180deg, #090c0950 0%, #090c09aa 38%, #090c09 88%),
+        radial-gradient(ellipse at 50% 26%, #090c09e8 0%, #090c0930 80%),
+        url('./tfi-banner.webp') center top / cover no-repeat;
+      filter: blur(7px);
+    }
+    .score-page::after {
+      content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 0% 0%, #aaff1426 0%, transparent 48%),
+        radial-gradient(ellipse at 100% 0%, #aaff1426 0%, transparent 48%);
+    }
     .score-page .scoreboard { padding-block: 28px 48px; }
     .score-hero {
       position: relative; isolation: isolate; overflow: hidden;
       display: flex; align-items: center; justify-content: space-between; gap: 24px;
       padding: clamp(22px, 4vw, 52px); border: 1px solid #354329; border-radius: 10px;
-      background: radial-gradient(ellipse at 100% 0, #30471b 0%, transparent 62%), #10160f;
+      background: radial-gradient(ellipse at 100% 0, #30471bc9 0%, transparent 68%), #10160fe6;
     }
     .score-hero::before {
       content: ''; position: absolute; inset: 0; z-index: -1;
