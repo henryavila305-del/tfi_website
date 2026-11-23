@@ -75,6 +75,51 @@
     .score-broadcast .score-game-status { padding: 1vh 1vw; font-size: clamp(11px, 1.8vh, 25px); }
     .score-broadcast #scoreboard-status { margin-top: 10px; }
     .score-broadcast .score-footer { margin-top: 14px; font-size: clamp(12px, 1.8vh, 24px); color: #baff19; }
+    @media (min-width: 701px) and (min-aspect-ratio: 4/3) {
+      .score-broadcast .scoreboard {
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+        box-sizing: border-box;
+      }
+      .score-broadcast #scoreboard-games {
+        display: grid;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+      }
+      .score-broadcast .scoreboard-group { margin-block: 1.5vh; min-width: 0; }
+      .score-broadcast .scoreboard-grid {
+        --team-size: clamp(14px, 2.6vh, 38px);
+        --score-size: clamp(24px, 5.6vh, 80px);
+        --clock-size: clamp(12px, 2vh, 28px);
+        --row-height: clamp(47px, 9vh, 115px);
+        gap: clamp(12px, 1.4vw, 30px);
+      }
+      .score-broadcast .scoreboard-grid:not(:has(> :nth-child(3))) {
+        --team-size: clamp(18px, 3.5vh, 52px);
+        --score-size: clamp(36px, 8.4vh, 110px);
+        --clock-size: clamp(14px, 2.65vh, 38px);
+        --row-height: clamp(58px, 13vh, 160px);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .score-broadcast .scoreboard-grid:has(> :only-child) {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: min(76%, 1320px);
+        margin-inline: auto;
+      }
+      .score-broadcast .scoreboard-game[data-state="in"] {
+        border-color: #92c93e;
+        box-shadow: inset 0 0 0 1px #baff1920, 0 8px 24px #0006;
+      }
+      .score-broadcast .scoreboard-team {
+        min-height: var(--row-height);
+        font-size: var(--team-size);
+      }
+      .score-broadcast .scoreboard-team strong { font-size: var(--score-size); }
+      .score-broadcast .score-game-status { font-size: var(--clock-size); }
+      .score-broadcast .score-footer { margin-top: 1vh; }
+    }
     @media (max-width: 700px) {
       .scoreboard-team { font-size: 14px; }
       .score-broadcast .scoreboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
