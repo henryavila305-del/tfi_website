@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 const html = await readFile('index.html', 'utf8');
 const expected = [
-  { name:'Top 3', w:170, l:126, p:0 },
-  { name:'Premium / Max Bet', w:71, l:35, p:1 },
+  { name:'Top 3', w:171, l:128, p:0 },
+  { name:'Premium / Max Bet', w:72, l:35, p:1 },
   { name:'Dog of the Day', w:35, l:23, p:0 },
   { name:'Play of the Day', w:24, l:31, p:2 }
 ];
