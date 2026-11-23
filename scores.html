@@ -356,6 +356,47 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     .score-broadcast .scoreboard-group h2 { letter-spacing: .04em; }
     .score-broadcast .score-game-status { font-variant-numeric: tabular-nums; }
+
+    .score-broadcast .score-headlines:not([hidden]) {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      margin-bottom: clamp(8px, 1.4vh, 16px);
+      border: 1px solid var(--broadcast-line);
+      border-inline-start: 2px solid var(--broadcast-pink);
+      background: #101026;
+      color: #f4f7f0;
+      font-size: clamp(13px, 1.9vh, 22px);
+    }
+    .score-headlines-label, .score-headlines button {
+      padding: .65em .8em;
+      font: 700 .85em/1.2 var(--broadcast-display-font);
+    }
+    .score-headlines-label { color: var(--broadcast-cyan); }
+    .score-headlines-window { overflow: hidden; }
+    .score-headlines-track { display: flex; width: max-content; }
+    .score-headlines-track:has(> :nth-child(2)) {
+      animation: score-headlines-scroll var(--headlines-duration, 55s) linear infinite;
+    }
+    .score-headlines-strip {
+      display: flex; align-items: center; gap: 2em; flex: 0 0 auto;
+      list-style: none; padding: .55em 2em .55em 0; margin: 0;
+    }
+    .score-headlines-strip li { white-space: nowrap; }
+    .score-headlines-strip b { color: var(--broadcast-violet); margin-inline-end: .6em; }
+    .score-headlines button {
+      border: 0; border-inline-start: 1px solid var(--broadcast-line);
+      color: var(--broadcast-muted); background: transparent; cursor: pointer;
+    }
+    .score-headlines.is-paused .score-headlines-track { animation-play-state: paused; }
+    .score-headlines-window:has(.score-headlines-strip:only-child) { overflow: auto; }
+    .score-headlines:has(.score-headlines-strip:only-child) button { visibility: hidden; }
+    @keyframes score-headlines-scroll { to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .score-headlines-track:has(> :nth-child(2)) { animation: none; }
+      .score-headlines-window { overflow: auto; }
+      .score-headlines-strip[aria-hidden="true"], .score-headlines button { display: none; }
+    }
   </style>
 </head>
 <body class="score-page">
@@ -383,6 +424,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <p id="scoreboard-status" class="scoreboard-meta" role="status">Loading scores…</p>
     <div id="scoreboard-games"></div>
     <footer class="score-footer scoreboard-meta">
+      <section id="score-headlines" class="score-headlines" aria-label="ESPN headlines" hidden>
+        <strong class="score-headlines-label">ESPN HEADLINES</strong>
+        <div class="score-headlines-window" tabindex="0" aria-label="Sports headlines">
+          <div class="score-headlines-track"></div>
+        </div>
+        <button type="button" aria-pressed="false" aria-label="Pause headlines">Pause</button>
+      </section>
       <strong>THEFAVINDEX.COM</strong> · Scores via ESPN · Refreshes every 10 seconds <span class="score-coverage">· College coverage: FBS football and Division I men’s basketball</span>
     </footer>
     <noscript>Enable JavaScript to see scores.</noscript>

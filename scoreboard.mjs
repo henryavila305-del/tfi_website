@@ -164,9 +164,67 @@ async function refresh() {
   }
 }
 
+function startHeadlinesTicker() {
+  const ticker = document.querySelector('#score-headlines');
+  if (!ticker) return;
+  const track = ticker.querySelector('.score-headlines-track');
+  const button = ticker.querySelector('button');
+  let previous = '';
+  let lastSuccess = 0;
+
+  button.addEventListener('click', () => {
+    const paused = ticker.classList.toggle('is-paused');
+    button.setAttribute('aria-pressed', String(paused));
+    button.textContent = paused ? 'Resume' : 'Pause';
+  });
+
+  async function refreshHeadlines() {
+    try {
+      const response = await fetch('/api/headlines', { signal: AbortSignal.timeout(8000) });
+      if (!response.ok) throw new Error('Headlines unavailable');
+      const { headlines } = await response.json();
+      if (!Array.isArray(headlines)) throw new Error('Invalid headlines');
+      lastSuccess = Date.now();
+      const incoming = JSON.stringify(headlines);
+      if (incoming === previous) {
+        ticker.hidden = !headlines.length;
+        return;
+      }
+      previous = incoming;
+      ticker.hidden = !headlines.length;
+      if (!headlines.length) {
+        track.replaceChildren();
+        return;
+      }
+      const strip = element('ul', '', 'score-headlines-strip');
+      let characters = 0;
+      for (const { headline, league } of headlines) {
+        const item = element('li');
+        item.append(element('b', league), document.createTextNode(headline));
+        strip.append(item);
+        characters += headline.length + league.length + 8;
+      }
+      if (headlines.length === 1) {
+        track.replaceChildren(strip);
+      } else {
+        const copy = strip.cloneNode(true);
+        copy.setAttribute('aria-hidden', 'true');
+        track.replaceChildren(strip, copy);
+        track.style.setProperty('--headlines-duration', Math.max(24, characters / 14) + 's');
+      }
+    } catch {
+      if (Date.now() - lastSuccess > 30 * 60 * 1000) ticker.hidden = true;
+    }
+  }
+
+  refreshHeadlines();
+  setInterval(refreshHeadlines, 5 * 60 * 1000);
+}
+
 refresh();
 setInterval(refresh, 10000);
 if (broadcast) {
+  startHeadlinesTicker();
   setInterval(() => {
     if (document.hidden || broadcastPageCount < 2) return;
     broadcastPage = (broadcastPage + 1) % broadcastPageCount;
