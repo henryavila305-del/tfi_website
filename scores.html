@@ -65,9 +65,8 @@
     .score-footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #344032; }
     .score-broadcast .score-coverage, .score-broadcast .site-header, .score-broadcast .scoreboard-controls { display: none; }
     .score-broadcast .scoreboard { width: 100%; max-width: none; padding: 3vh 4vw; }
-    .score-broadcast .score-hero { padding: 2vh 2vw; }
+    .score-broadcast .score-hero { padding: clamp(12px, 1.4vh, 22px) 2vw; }
     .score-broadcast .score-hero img { display: none; }
-    .score-broadcast .score-title { font-size: clamp(28px, 7vh, 100px); }
     .score-broadcast .scoreboard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1vw; }
     .score-broadcast .scoreboard-team { padding: 1vh 1vw; font-size: clamp(12px, 2.45vh, 35px); }
     .score-broadcast .scoreboard-team strong { font-size: clamp(22px, 5vh, 68px); }
@@ -82,19 +81,30 @@
         min-height: 100dvh;
         box-sizing: border-box;
       }
-      .score-broadcast #scoreboard-games {
+      .score-broadcast .score-hero > div {
         display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        flex: 1;
-        min-width: 0;
+        column-gap: 2vw;
+        width: 100%;
       }
-      .score-broadcast .scoreboard-group { margin-block: 1.5vh; min-width: 0; }
+      .score-broadcast .score-hero .scoreboard-meta {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        text-align: right;
+      }
+      .score-broadcast #scoreboard-games { min-width: 0; }
+      .score-broadcast .scoreboard-group { margin-block: clamp(12px, 2vh, 24px); min-width: 0; }
       .score-broadcast .scoreboard-grid {
         --team-size: clamp(14px, 2.6vh, 38px);
         --score-size: clamp(24px, 5.6vh, 80px);
         --clock-size: clamp(12px, 2vh, 28px);
         --row-height: clamp(47px, 9vh, 115px);
         gap: clamp(12px, 1.4vw, 30px);
+      }
+      .score-broadcast .scoreboard-grid:not(:has(> :nth-child(4))) {
+        --score-size: clamp(32px, 7vh, 92px);
+        --row-height: clamp(55px, 12vh, 150px);
       }
       .score-broadcast .scoreboard-grid:not(:has(> :nth-child(3))) {
         --team-size: clamp(18px, 3.5vh, 52px);
@@ -118,7 +128,7 @@
       }
       .score-broadcast .scoreboard-team strong { font-size: var(--score-size); }
       .score-broadcast .score-game-status { font-size: var(--clock-size); }
-      .score-broadcast .score-footer { margin-top: 1vh; }
+      .score-broadcast .score-footer { margin-top: auto; }
     }
     @media (max-width: 700px) {
       .scoreboard-team { font-size: 14px; }
@@ -335,7 +345,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       font-weight: 700;
     }
     .score-broadcast .score-title {
-      font-size: clamp(26px, min(7vh, 8vw), 100px);
+      margin: 4px 0 2px;
+      font-size: clamp(26px, min(6vh, 8vw), 88px);
       line-height: 1;
       letter-spacing: .025em;
     }
