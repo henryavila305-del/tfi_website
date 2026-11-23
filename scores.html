@@ -178,6 +178,40 @@
       border-color: #55c7e0;
       box-shadow: inset 0 0 0 1px #64f6ff22, 0 0 19px #64f6ff22, 0 8px 22px #0005;
     }
+    @supports (clip-path: polygon(0 0, 100% 0, 0 100%)) {
+      .score-broadcast .scoreboard-game {
+        --corner-cut: 13px;
+        position: relative;
+        isolation: isolate;
+        border: 1px solid transparent;
+        border-radius: 0;
+        background: linear-gradient(125deg, #65829d, #524776 40%, #774a79) border-box;
+        clip-path: polygon(
+          0 0, calc(100% - var(--corner-cut)) 0, 100% var(--corner-cut),
+          100% 100%, var(--corner-cut) 100%, 0 calc(100% - var(--corner-cut))
+        );
+      }
+      .score-broadcast .scoreboard-game::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: linear-gradient(125deg, #17182f, #100f23 70%, #21142b);
+        clip-path: polygon(
+          0 0, calc(100% - var(--corner-cut) + 1px) 0, 100% calc(var(--corner-cut) - 1px),
+          100% 100%, calc(var(--corner-cut) - 1px) 100%, 0 calc(100% - var(--corner-cut) + 1px)
+        );
+      }
+      .score-broadcast .scoreboard-game[data-state="in"] {
+        border-color: transparent;
+        background: linear-gradient(125deg, var(--broadcast-cyan), #5488b8 44%, var(--broadcast-pink)) border-box;
+      }
+      .score-broadcast .score-game-status {
+        /* Keep the top-right frame visible through the status strip. */
+        clip-path: polygon(0 0, calc(100% - var(--corner-cut) + 1px) 0, 100% calc(var(--corner-cut) - 1px), 100% 100%, 0 100%);
+      }
+    }
     .score-broadcast .score-game-status {
       background: #101026;
       border-color: var(--broadcast-line);
