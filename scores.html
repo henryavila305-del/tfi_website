@@ -124,6 +124,73 @@
       .scoreboard-team { font-size: 14px; }
       .score-broadcast .scoreboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
+
+    /* OBS uses a separate palette from the website scoreboard. */
+    .score-page.score-broadcast {
+      --broadcast-cyan: #64f6ff;
+      --broadcast-pink: #ff61bb;
+      --broadcast-violet: #ab90fe;
+      --broadcast-muted: #c6bfd9;
+      --broadcast-line: #393255;
+      background: #080715;
+    }
+    .score-broadcast.score-page::before {
+      background:
+        linear-gradient(180deg, #080715c9, #080715e8 42%, #080715 92%),
+        url('./tfi-banner.webp') center top / cover no-repeat;
+    }
+    .score-broadcast.score-page::after {
+      background:
+        radial-gradient(ellipse at 0% 10%, #087d9b48, transparent 54%),
+        radial-gradient(ellipse at 100% 9%, #ae227c53, transparent 53%),
+        radial-gradient(ellipse at 50% 108%, #482b8d60, transparent 58%);
+    }
+    .score-broadcast .score-hero {
+      border-color: var(--broadcast-line);
+      background: linear-gradient(112deg, #102839, #16142b 48%, #361832);
+      box-shadow: 0 12px 30px #0005;
+    }
+    .score-broadcast .score-hero::before {
+      background: repeating-linear-gradient(118deg, transparent 0 30px, #d8c7ff14 31px 32px);
+      mask-image: linear-gradient(90deg, transparent 12%, #000 62%);
+    }
+    .score-broadcast .score-hero::after {
+      content: ''; position: absolute; inset: 0 0 auto; height: 3px; pointer-events: none;
+      background: linear-gradient(90deg, var(--broadcast-cyan), var(--broadcast-violet) 49%, var(--broadcast-pink));
+    }
+    .score-broadcast .score-hero img {
+      border: 1px solid #db8fc66b;
+      border-radius: 8px;
+      box-shadow: 0 0 22px #ff61bb2a;
+    }
+    .score-broadcast .score-kicker { color: var(--broadcast-cyan); }
+    .score-broadcast .scoreboard-meta { color: var(--broadcast-muted); }
+    .score-broadcast .scoreboard-group h2::after {
+      height: 1px; border: 0;
+      background: linear-gradient(90deg, #64f6ff90, #ab90fe60 50%, #ff61bb72);
+    }
+    .score-broadcast .scoreboard-game {
+      background: linear-gradient(125deg, #17182f, #100f23 70%, #21142b);
+      border-color: var(--broadcast-line);
+      box-shadow: 0 8px 22px #0005;
+    }
+    .score-broadcast .scoreboard-game[data-state="in"] {
+      border-color: #55c7e0;
+      box-shadow: inset 0 0 0 1px #64f6ff22, 0 0 19px #64f6ff22, 0 8px 22px #0005;
+    }
+    .score-broadcast .score-game-status {
+      background: #101026;
+      border-color: var(--broadcast-line);
+      color: var(--broadcast-muted);
+    }
+    .score-broadcast .score-game-status b { color: #efddff; }
+    .score-broadcast [data-state="in"] .score-game-status span { color: var(--broadcast-cyan); }
+    .score-broadcast .scoreboard-team + .scoreboard-team { border-color: var(--broadcast-line); }
+    .score-broadcast .score-team-tag { background: #32254b; color: #e7dafe; }
+    .score-broadcast .scoreboard-team strong { color: #fff; }
+    .score-broadcast .scoreboard-group > p { border-color: var(--broadcast-line); color: var(--broadcast-muted); }
+    .score-broadcast .score-footer { border-color: var(--broadcast-line); }
+    .score-broadcast .score-footer strong { color: var(--broadcast-cyan); }
   </style>
 </head>
 <body class="score-page">
