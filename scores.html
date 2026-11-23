@@ -66,7 +66,7 @@
     .score-broadcast .score-coverage, .score-broadcast .site-header, .score-broadcast .scoreboard-controls { display: none; }
     .score-broadcast .scoreboard { width: 100%; max-width: none; padding: 3vh 4vw; }
     .score-broadcast .score-hero { padding: 2vh 2vw; }
-    .score-broadcast .score-hero img { width: 11vh; }
+    .score-broadcast .score-hero img { display: none; }
     .score-broadcast .score-title { font-size: clamp(28px, 7vh, 100px); }
     .score-broadcast .scoreboard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1vw; }
     .score-broadcast .scoreboard-team { padding: 1vh 1vw; font-size: clamp(12px, 2.45vh, 35px); }
@@ -157,11 +157,6 @@
     .score-broadcast .score-hero::after {
       content: ''; position: absolute; inset: 0 0 auto; height: 3px; pointer-events: none;
       background: linear-gradient(90deg, var(--broadcast-cyan), var(--broadcast-violet) 49%, var(--broadcast-pink));
-    }
-    .score-broadcast .score-hero img {
-      border: 1px solid #db8fc66b;
-      border-radius: 8px;
-      box-shadow: 0 0 22px #ff61bb2a;
     }
     .score-broadcast .score-kicker { color: var(--broadcast-cyan); }
     .score-broadcast .scoreboard-meta { color: var(--broadcast-muted); }
