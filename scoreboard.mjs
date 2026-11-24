@@ -23,6 +23,7 @@ let broadcastPage = 0;
 let broadcastPageCount = 1;
 let broadcastState = '';
 let refreshing = false;
+let previousScores = new Map();
 if (broadcast) document.body.classList.add('score-broadcast');
 
 for (const sport of leagues) league.add(new Option(sport, sport));
@@ -36,7 +37,7 @@ function element(tag, content, className) {
   return node;
 }
 
-function gameCard(sport, game, state) {
+function gameCard(sport, game, state, increases) {
   const card = element('li', '', 'scoreboard-game');
   card.dataset.state = state;
   const gameStatus = game.status ?? game.competitions[0].status;
@@ -52,7 +53,22 @@ function gameCard(sport, game, state) {
     const tag = element('span', team.team?.abbreviation || (team.homeAway === 'home' ? 'HOME' : 'AWAY'), 'score-team-tag');
     tag.setAttribute('aria-hidden', 'true');
     row.append(tag, element('span', team.team?.displayName || team.team?.name || 'Team TBD', 'score-team-name'));
-    if (state !== 'pre' && /^\d+$/.test(String(team.score))) row.append(element('strong', String(team.score)));
+    if (broadcast && team.team?.logo) {
+      const logo = element('img', '', 'score-team-logo');
+      logo.alt = '';
+      logo.hidden = true;
+      logo.addEventListener('load', () => {
+        tag.hidden = true;
+        logo.hidden = false;
+      }, { once: true });
+      row.prepend(logo);
+      logo.src = team.team.logo;
+    }
+    if (state !== 'pre' && /^\d+$/.test(String(team.score))) {
+      const score = element('strong', String(team.score));
+      if (increases.has(sport + ':' + game.id + ':' + team.homeAway)) score.classList.add('score-just-updated');
+      row.append(score);
+    }
     card.append(row);
   }
   return card;
@@ -87,6 +103,26 @@ function render() {
     }
   }
 
+  const increases = new Set();
+  if (broadcast) {
+    const currentScores = new Map();
+    for (const [id, { game, state, updatedAt }] of games) {
+      if (state !== 'in' && state !== 'pre') continue;
+      for (const team of game.competitions[0].competitors) {
+        if (team.homeAway !== 'home' && team.homeAway !== 'away') continue;
+        const key = id + ':' + team.homeAway;
+        const previous = previousScores.get(key);
+        if (!/^\d+$/.test(String(team.score)) || (previous && updatedAt <= previous.updatedAt)) {
+          if (previous) currentScores.set(key, previous);
+          continue;
+        }
+        const score = Number(team.score);
+        if (state === 'in' && previous && score > previous.score) increases.add(key);
+        currentScores.set(key, { score, updatedAt });
+      }
+    }
+    previousScores = currentScores;
+  }
   const allGames = [...games.values()];
   const groups = sections.map(([state, label]) => ({
     state, label,
@@ -117,7 +153,7 @@ function render() {
     section.append(element('h2', label + pageLabel));
     if (matches.length) {
       const list = element('ul', '', 'scoreboard-grid');
-      for (const { sport, game } of matches) list.append(gameCard(sport, game, state));
+      for (const { sport, game } of matches) list.append(gameCard(sport, game, state, increases));
       section.append(list);
     } else {
       section.append(element('p', missing.size ? 'No live games in the available scores.' : 'No games live right now.'));
@@ -164,9 +200,67 @@ async function refresh() {
   }
 }
 
+function startHeadlinesTicker() {
+  const ticker = document.querySelector('#score-headlines');
+  if (!ticker) return;
+  const track = ticker.querySelector('.score-headlines-track');
+  const button = ticker.querySelector('button');
+  let previous = '';
+  let lastSuccess = 0;
+
+  button.addEventListener('click', () => {
+    const paused = ticker.classList.toggle('is-paused');
+    button.setAttribute('aria-pressed', String(paused));
+    button.textContent = paused ? 'Resume' : 'Pause';
+  });
+
+  async function refreshHeadlines() {
+    try {
+      const response = await fetch('/api/headlines', { signal: AbortSignal.timeout(8000) });
+      if (!response.ok) throw new Error('Headlines unavailable');
+      const { headlines } = await response.json();
+      if (!Array.isArray(headlines)) throw new Error('Invalid headlines');
+      lastSuccess = Date.now();
+      const incoming = JSON.stringify(headlines);
+      if (incoming === previous) {
+        ticker.hidden = !headlines.length;
+        return;
+      }
+      previous = incoming;
+      ticker.hidden = !headlines.length;
+      if (!headlines.length) {
+        track.replaceChildren();
+        return;
+      }
+      const strip = element('ul', '', 'score-headlines-strip');
+      let characters = 0;
+      for (const { headline, league } of headlines) {
+        const item = element('li');
+        item.append(element('b', league), document.createTextNode(headline));
+        strip.append(item);
+        characters += headline.length + league.length + 8;
+      }
+      if (headlines.length === 1) {
+        track.replaceChildren(strip);
+      } else {
+        const copy = strip.cloneNode(true);
+        copy.setAttribute('aria-hidden', 'true');
+        track.replaceChildren(strip, copy);
+        track.style.setProperty('--headlines-duration', Math.max(24, characters / 14) + 's');
+      }
+    } catch {
+      if (Date.now() - lastSuccess > 30 * 60 * 1000) ticker.hidden = true;
+    }
+  }
+
+  refreshHeadlines();
+  setInterval(refreshHeadlines, 5 * 60 * 1000);
+}
+
 refresh();
 setInterval(refresh, 10000);
 if (broadcast) {
+  startHeadlinesTicker();
   setInterval(() => {
     if (document.hidden || broadcastPageCount < 2) return;
     broadcastPage = (broadcastPage + 1) % broadcastPageCount;
