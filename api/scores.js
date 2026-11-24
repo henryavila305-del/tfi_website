@@ -9,7 +9,7 @@ export default async function handler(req,res){
   const reply=await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sports[sport]}/scoreboard?dates=${date.replaceAll('-','')}&limit=500${collegeGroups}`,{signal:AbortSignal.timeout(8000)});
   if(!reply.ok)throw Error('Feed unavailable');
   const data=await reply.json();if(!Array.isArray(data.events))throw Error('Invalid feed');
-  const events=data.events.map(e=>({id:e.id,date:e.date,status:e.status,competitions:(e.competitions||[]).slice(0,1).map(c=>({status:c.status,competitors:(c.competitors||[]).map(t=>({score:t.score,homeAway:t.homeAway,team:{displayName:t.team?.displayName,shortDisplayName:t.team?.shortDisplayName,name:t.team?.name,abbreviation:t.team?.abbreviation}}))}))}));
+  const events=data.events.map(e=>({id:e.id,date:e.date,status:e.status,competitions:(e.competitions||[]).slice(0,1).map(c=>({status:c.status,competitors:(c.competitors||[]).map(t=>({score:t.score,homeAway:t.homeAway,team:{displayName:t.team?.displayName,shortDisplayName:t.team?.shortDisplayName,name:t.team?.name,abbreviation:t.team?.abbreviation,logo:coverage==='full'&&typeof t.team?.logo==='string'&&/^https:\/\/a\.espncdn\.com\/i\/teamlogos\//.test(t.team.logo)?t.team.logo:undefined}}))}))}));
   if(coverage==='full')res.setHeader('Cache-Control','public, s-maxage=5, stale-while-revalidate=3');
   return res.status(200).json({events,updatedAt:new Date().toISOString()});
  }catch{return res.status(503).json({error:'Scores temporarily unavailable'});}

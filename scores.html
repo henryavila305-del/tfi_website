@@ -397,6 +397,22 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       .score-headlines-window { overflow: auto; }
       .score-headlines-strip[aria-hidden="true"], .score-headlines button { display: none; }
     }
+
+    .score-broadcast .score-team-logo {
+      width: clamp(23px, 4.4vh, 52px);
+      height: clamp(23px, 4.4vh, 52px);
+      object-fit: contain;
+    }
+    .score-broadcast .score-just-updated {
+      animation: score-increase 1.15s ease-out both;
+    }
+    @keyframes score-increase {
+      0%, 22% { color: var(--broadcast-cyan); text-shadow: 0 0 .3em #64f6ff75; }
+      100% { color: #fff; text-shadow: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .score-broadcast .score-just-updated { animation: none; }
+    }
   </style>
 </head>
 <body class="score-page">
