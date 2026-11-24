@@ -5,11 +5,11 @@ const html = await readFile('index.html', 'utf8');
 const expected = [
   { name:'Top 3', w:171, l:128, p:0 },
   { name:'Premium / Max Bet', w:72, l:35, p:1 },
-  { name:'Dog of the Day', w:35, l:23, p:0 },
-  { name:'Play of the Day', w:24, l:31, p:2 }
+  { name:'Dog of the Day', w:35, l:23, p:0 }
 ];
 const panels = [...html.matchAll(/<article class="record-panel"[\s\S]*?<\/article>/g)].map(m => m[0]);
-assert.equal(panels.length,4);
+assert.equal(panels.length,expected.length);
+assert.doesNotMatch(html, /Play of the Day|record-panel-3/i);
 for (let i=0;i<panels.length;i++) {
   const panel=panels[i], target=expected[i];
   const rows=[...panel.matchAll(/<tr><th scope="row">([^<]+)<\/th><td>(\d+)<\/td><td>(\d+)<\/td><td>(\d+)<\/td><td>([\d.]+)%<\/td><\/tr>/g)];
@@ -39,5 +39,5 @@ assert.match(html,/self-reported historical imports/);
 assert.match(html,/Net units and ROI are not presented/);
 assert.match(html,/Premium overlaps Top 3 on ten entries/);
 assert(!/TFI_Record_Tracker|source_chat|source_url|source_verified|tracker-ledger-row|bonus-parlay-row/.test(html),'Private import metadata must not ship');
-console.log('Passed four reconciled record tables, percentage arithmetic, chart bounds and category switching.');
+console.log('Passed three reconciled record tables, percentage arithmetic, chart bounds and category switching.');
 
