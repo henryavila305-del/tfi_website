@@ -93,6 +93,18 @@
         grid-row: 1 / span 2;
         text-align: right;
       }
+      .score-broadcast .score-hero img {
+        display: block;
+        position: absolute;
+        inset: 50% auto auto 50%;
+        transform: translate(-50%, -50%);
+        width: clamp(66px, 10vw, 124px);
+        height: clamp(40px, 7vh, 82px);
+        object-fit: cover;
+        mix-blend-mode: screen;
+        mask-image: radial-gradient(ellipse at center, #000 33%, #000d 60%, transparent 88%);
+        pointer-events: none;
+      }
       .score-broadcast #scoreboard-games { min-width: 0; }
       .score-broadcast .scoreboard-group { margin-block: clamp(12px, 2vh, 24px); min-width: 0; }
       .score-broadcast .scoreboard-grid {
