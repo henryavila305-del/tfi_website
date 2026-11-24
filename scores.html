@@ -385,6 +385,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       font: 700 .85em/1.2 var(--broadcast-display-font);
     }
     .score-headlines-label { color: var(--broadcast-cyan); }
+    #score-player-props .score-headlines-label { color: var(--broadcast-pink); }
     .score-headlines-window { overflow: hidden; }
     .score-headlines-track { display: flex; width: max-content; }
     .score-headlines-track:has(> :nth-child(2)) {
@@ -452,6 +453,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <p id="scoreboard-status" class="scoreboard-meta" role="status">Loading scores…</p>
     <div id="scoreboard-games"></div>
     <footer class="score-footer scoreboard-meta">
+      <section id="score-player-props" class="score-headlines" aria-label="Trending player props" hidden>
+        <strong class="score-headlines-label">DK PROPS · BY HANDLE</strong>
+        <div class="score-headlines-window" tabindex="0" aria-label="Upcoming DraftKings player props">
+          <div class="score-headlines-track"></div>
+        </div>
+        <button type="button" aria-pressed="false" aria-label="Pause player props">Pause</button>
+      </section>
       <section id="score-headlines" class="score-headlines" aria-label="ESPN headlines" hidden>
         <strong class="score-headlines-label">ESPN HEADLINES</strong>
         <div class="score-headlines-window" tabindex="0" aria-label="Sports headlines">
