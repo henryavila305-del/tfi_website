@@ -66,7 +66,7 @@
     .score-broadcast .score-coverage, .score-broadcast .site-header, .score-broadcast .scoreboard-controls { display: none; }
     .score-broadcast .scoreboard { width: 100%; max-width: none; padding: 3vh 4vw; }
     .score-broadcast .score-hero { padding: clamp(12px, 1.4vh, 22px) 2vw; }
-    .score-broadcast .score-hero img { display: none; }
+    .score-hero-mark, .score-broadcast .score-hero img { display: none; }
     .score-broadcast .scoreboard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1vw; }
     .score-broadcast .scoreboard-team { padding: 1vh 1vw; font-size: clamp(12px, 2.45vh, 35px); }
     .score-broadcast .scoreboard-team strong { font-size: clamp(22px, 5vh, 68px); }
@@ -93,17 +93,37 @@
         grid-row: 1 / span 2;
         text-align: right;
       }
-      .score-broadcast .score-hero img {
-        display: block;
+      .score-broadcast .score-hero-mark {
+        display: grid;
+        place-items: center;
         position: absolute;
         inset: 50% auto auto 50%;
         transform: translate(-50%, -50%);
-        width: clamp(66px, 10vw, 124px);
-        height: clamp(40px, 7vh, 82px);
-        object-fit: cover;
-        mix-blend-mode: screen;
-        mask-image: radial-gradient(ellipse at center, #000 33%, #000d 60%, transparent 88%);
+        font: italic 700 clamp(30px, min(5.3vh, 5vw), 66px)/1 var(--broadcast-display-font);
+        letter-spacing: -.04em;
         pointer-events: none;
+      }
+      .score-broadcast .score-hero-mark::before {
+        content: '';
+        position: absolute;
+        width: 1.12em;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 1px solid #9bf65c9c;
+        border-inline-color: transparent;
+        transform: rotate(-13deg);
+      }
+      .score-broadcast .score-hero-mark > span {
+        position: relative;
+        padding-inline: .08em .16em;
+        color: #edf6ff;
+      }
+      @supports (background-clip: text) {
+        .score-broadcast .score-hero-mark > span {
+          background: linear-gradient(180deg, #fff 16%, #d4e7fb 49%, #8ca9c7 52%, #f3f9ff 84%);
+          background-clip: text;
+          color: transparent;
+        }
       }
       .score-broadcast #scoreboard-games { min-width: 0; }
       .score-broadcast .scoreboard-group { margin-block: clamp(12px, 2vh, 24px); min-width: 0; }
@@ -445,6 +465,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <p class="scoreboard-meta"><time id="scoreboard-date"></time> · Central Time</p>
       </div>
       <img src="./tfi-logo.webp" alt="" width="100" height="100">
+      <span class="score-hero-mark" aria-hidden="true"><span>TFI</span></span>
     </div>
     <div class="scoreboard-controls">
       <label>League <select id="scoreboard-league" disabled><option value="">All leagues</option></select></label>
