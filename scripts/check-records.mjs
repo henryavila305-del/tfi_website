@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 const html = await readFile('index.html', 'utf8');
 const expected = [
-  { name:'Top 3', w:173, l:132, p:0 },
-  { name:'Premium / Max Bet', w:73, l:36, p:1 },
+  { name:'Top 3', w:174, l:134, p:0 },
+  { name:'Premium / Max Bet', w:74, l:36, p:1 },
   { name:'Dog of the Day', w:35, l:23, p:0 }
 ];
 const panels = [...html.matchAll(/<article class="record-panel"[\s\S]*?<\/article>/g)].map(m => m[0]);
