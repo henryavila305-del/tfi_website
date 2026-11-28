@@ -86,19 +86,24 @@
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
         column-gap: 2vw;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
+      }
+      .score-broadcast .score-title {
+        grid-column: 1;
+        overflow-wrap: anywhere;
       }
       .score-broadcast .score-hero .scoreboard-meta {
         grid-column: 2;
         grid-row: 1 / span 2;
+        max-width: 17ch;
         text-align: right;
       }
       .score-broadcast .score-hero-mark {
         display: grid;
         place-items: center;
-        position: absolute;
-        inset: 50% auto auto 50%;
-        transform: translate(-50%, -50%);
+        position: relative;
+        flex: 0 0 auto;
         font: italic 700 clamp(30px, min(5.3vh, 5vw), 66px)/1 var(--broadcast-display-font);
         letter-spacing: -.04em;
         pointer-events: none;
@@ -382,7 +387,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     .score-broadcast .score-title {
       margin: 4px 0 2px;
-      font-size: clamp(26px, min(6vh, 8vw), 88px);
+      font-size: clamp(26px, min(6vh, 3.4vw), 88px);
       line-height: 1;
       letter-spacing: .025em;
     }
