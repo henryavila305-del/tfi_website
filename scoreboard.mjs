@@ -11,13 +11,21 @@ function centralDate(date) {
 const displayDate = new Intl.DateTimeFormat('en-US', { timeZone: zone, dateStyle: 'full' });
 const displayTime = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeStyle: 'short' });
 const leagues = Object.keys(sports);
+const sportLabels = [
+  ['', 'All Sports'], ['NFL', 'NFL'], ['NBA', 'NBA'], ['NHL', 'NHL'],
+  ['NCAAF', 'College Football'], ['NCAAB', 'College Basketball'], ['MLB', 'MLB'],
+];
 const sections = [['in', 'Live now'], ['pre', 'Upcoming'], ['post', 'Final'], ['other', 'Other game statuses']];
 const clock = document.querySelector('#scoreboard-date');
-const league = document.querySelector('#scoreboard-league');
+const controls = document.querySelector('.scoreboard-controls');
 const status = document.querySelector('#scoreboard-status');
 const board = document.querySelector('#scoreboard-games');
 const feeds = new Map();
-const broadcast = new URLSearchParams(location.search).get('view') === 'broadcast';
+const pageUrl = new URL(location.href);
+const broadcast = pageUrl.searchParams.get('view') === 'broadcast';
+const requestedSport = pageUrl.searchParams.get('sport')?.toUpperCase();
+const selectedSport = leagues.includes(requestedSport) ? requestedSport : '';
+const selectedLeagues = selectedSport ? [selectedSport] : leagues;
 const gamesPerPage = 6;
 let broadcastPage = 0;
 let broadcastPageCount = 1;
@@ -26,9 +34,35 @@ let refreshing = false;
 let previousScores = new Map();
 if (broadcast) document.body.classList.add('score-broadcast');
 
-for (const sport of leagues) league.add(new Option(sport, sport));
-league.disabled = false;
-league.addEventListener('change', render);
+if (selectedSport) {
+  const title = sportLabels.find(([sport]) => sport === selectedSport)[1] + ' Live Scores';
+  document.querySelector('.score-title').textContent = title;
+  document.title = title + ' | The Favorite Index';
+}
+
+if (!broadcast) {
+  const navigation = element('nav');
+  navigation.setAttribute('aria-label', 'Scores by sport');
+  Object.assign(navigation.style, { display: 'flex', flexWrap: 'wrap', gap: '8px' });
+  for (const [sport, label] of sportLabels) {
+    const url = new URL(pageUrl);
+    if (sport) url.searchParams.set('sport', sport.toLowerCase());
+    else url.searchParams.delete('sport');
+    const link = element('a', label, 'button small outline');
+    link.href = url.href;
+    if (sport === selectedSport) {
+      link.setAttribute('aria-current', 'page');
+      Object.assign(link.style, { background: '#baff19', color: '#101610', borderColor: '#baff19' });
+    }
+    navigation.append(link);
+  }
+  controls.querySelector('label').replaceWith(navigation);
+
+  const broadcastLink = controls.querySelector('a[href*="view=broadcast"]');
+  const broadcastUrl = new URL(pageUrl);
+  broadcastUrl.searchParams.set('view', 'broadcast');
+  broadcastLink.href = broadcastUrl.href;
+}
 
 function element(tag, content, className) {
   const node = document.createElement(tag);
@@ -80,12 +114,10 @@ function render() {
   clock.dateTime = today;
   clock.textContent = displayDate.format(now);
   const games = new Map();
-  const selected = league.value ? [league.value] : leagues;
   const missing = new Set();
   const timestamps = [];
   for (const [key, feed] of feeds) {
     const [sport] = key.split(':');
-    if (!selected.includes(sport)) continue;
     if (feed.failed) missing.add(sport);
     if (feed.updatedAt) timestamps.push(Date.parse(feed.updatedAt));
     for (const game of feed.events ?? []) {
@@ -129,6 +161,7 @@ function render() {
     matches: allGames.filter(game => game.state === state)
       .sort((a, b) => Date.parse(a.game.date) - Date.parse(b.game.date)),
   }));
+  const noGamesToday = selectedSport && !allGames.length && !missing.size && timestamps.length;
   let visibleGroups = groups.filter(group => group.matches.length || group.state === 'in');
   if (broadcast) {
     const mode = groups[0].matches.length ? 'live' : 'schedule';
@@ -156,7 +189,7 @@ function render() {
       for (const { sport, game } of matches) list.append(gameCard(sport, game, state, increases));
       section.append(list);
     } else {
-      section.append(element('p', missing.size ? 'No live games in the available scores.' : 'No games live right now.'));
+      section.append(element('p', missing.size ? 'No live games in the available scores.' : noGamesToday ? 'No games scheduled today.' : 'No games live right now.'));
     }
     fragment.append(section);
   }
@@ -179,7 +212,7 @@ async function refresh() {
     const hour = Number(hourFormat.format(now));
     if (hour < 6) dateKeys.unshift(new Date(midnight - 86400000).toISOString().slice(0, 10));
     if (hour >= 23) dateKeys.push(new Date(midnight + 86400000).toISOString().slice(0, 10));
-    const keys = leagues.flatMap(sport => dateKeys.map(date => [sport, date]));
+    const keys = selectedLeagues.flatMap(sport => dateKeys.map(date => [sport, date]));
     await Promise.all(keys.map(async ([sport, date]) => {
       const key = sport + ':' + date;
       try {
